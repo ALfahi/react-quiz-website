@@ -1,0 +1,16 @@
+
+/* smaller flex container for button and the forgotten password link*/
+.linkAndButton{
+    display: flex;
+    width: 100%; /* Make it span full width */
+    align-items: center; /* Aligns vertically */
+    margin-top: 1rem; /* Adds space between inputs & buttons */
+    justify-content: space-between;
+}
+
+
+
+.pageLink{
+color:blue;
+text-decoration: underline;
+}

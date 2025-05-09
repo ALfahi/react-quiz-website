@@ -1,0 +1,39 @@
+.circle {
+    position: relative; /* allow for absolute positining to properly align the text inside the circle. */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 5rem;
+    height: 5rem;
+    border: 1px solid grey; 
+    background-color:#f9f9f9;
+
+   
+  }
+  
+  .circle p {
+    position: absolute; /* Position text over the circle */
+    font-size: 1rem; 
+    color: grey;
+  }
+  
+  /*first p element is at left side of line, second p element is right side of the line */
+  .circle p:first-child {
+    top: 25%; 
+    left: 20%;
+  }
+  
+  .circle p:last-child {
+    bottom: 25%; 
+    right: 20%; 
+  }
+  
+  hr {
+
+    width: 100%; /*make line span over entire width of circle*/
+    border: 1px solid grey; 
+    transform: rotate(-45deg); /* Rotate the line diagonally */
+    
+  }
+  

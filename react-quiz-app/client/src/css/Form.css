@@ -1,0 +1,20 @@
+/* This just defines generally of o
+how all pages with textboxes should look like (since they all have textboxes and also an enter button*/
+
+.textboxContainer{
+    display:flex;
+    flex-direction:column;
+    gap: 3rem;
+    justify-content: flex-start;
+    
+
+    
+}
+
+
+/* Always place enter button to the bottom right of the very last textbox*/
+.enterButton{
+align-self: flex-end;
+text-align: right;
+}
+

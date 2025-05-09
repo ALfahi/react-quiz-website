@@ -1,0 +1,66 @@
+import Card from "../components/Card";
+
+
+export function editImage(setImage, newImage)// get's passed in a newImage url.
+{
+    setImage(newImage);
+}
+
+export function changeFileImage(event, setImage)// setImage is a file Object from the input type = 'file attribute.
+{
+    const file = event.target.files[0];// returns null if nothing in the array.
+
+
+    // Allowed raster image MIME types (excluding animated formats)
+    const allowedTypes = [
+        "image/png", "image/jpeg", "image/jpg", 
+        "image/bmp", "image/webp", "image/x-icon", "image/tiff"
+    ];
+
+
+    // Validate file type and check if the file was even uploaded.
+    if (!file || !allowedTypes.includes(file.type)) {
+        return;
+    }
+    else
+    {
+        // convert the passed in file into a url and then edit the banner image.
+        const url = URL.createObjectURL(file);
+        editImage(setImage, url);
+    }
+}
+
+/*************************GETTER and SETTERS ***************/
+
+export function getTotalQuestionsLocal()// gets total number of questions of a quiz from local storage
+{
+    return parseInt(localStorage.getItem("totalQuestions"));
+}
+
+
+/*************************SOME GENERAL FUNCTIONS ***************/
+
+export function validateTextLength(text, minLength, maxLength)// checks if the text is between the min and max length
+{
+    return text.length >= minLength && text.length <= maxLength;
+}
+
+
+/******************* some general functions needed to connect client to back end ***/
+
+// This function gets a http response and then displays the necessary status error message client side, the actual status
+// error messages are defined within the backend logic.
+//
+export async function displayResponseStatusMessages(response, setText, setMessageType)
+{
+    const data = await response.json();
+    setText(data.message);
+    if (response.ok)// success
+    {
+        setMessageType("sucess");
+    }
+    else// not successfull
+    {
+        setMessageType("error");
+    }
+}

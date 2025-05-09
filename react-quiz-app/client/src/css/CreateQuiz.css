@@ -1,0 +1,64 @@
+form, figure .imageButtons, .sameLine, figure{
+    display: flex;
+    gap: 1rem;
+}
+
+form, figure{
+    flex-direction: column;
+}
+
+
+label{
+    color:black;
+}
+
+figure{
+    margin: auto;/* centers the figure and the image container horizontally */
+    width: 70%;
+}
+
+figure .imageContainer{
+    height: 40vh;
+    background-color: gray;
+    padding: 1rem;
+    width: 100%;
+}
+
+figure .imageButtons{
+    justify-content: space-between;
+}
+figure img{
+    height: 100%;
+    width: 100%;
+}
+
+#submit{
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 1rem 0;
+}
+
+.previewCard{
+    position: absolute;
+    top: 25%;
+    border: 1px solid grey;
+    background-color: #ffffffff;
+    padding: 2rem;
+    max-width: 40%;
+    max-height: 60%;
+    overflow: auto;
+   
+}
+
+#crossButton{
+    position: absolute;
+    top: 0;/* can do top -1rem, right -1rem to make the button clip through the border and be at the top right border, 
+    on top of the border instead of within the container */
+    right:0;
+    border-radius: 0%;
+}
+
+.card{/* makes sure that the card component doesn't overlfow the container */
+    max-width: 100%;
+    max-height: 100%;
+}

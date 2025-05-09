@@ -1,0 +1,13 @@
+.homeContainer{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15vh;
+}
+
+.homeButton{
+    text-align: center;
+    width: 12rem;
+    height: 6rem;
+    font-size: 2rem;
+}

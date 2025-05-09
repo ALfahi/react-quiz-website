@@ -1,0 +1,39 @@
+/*Exact same styling as menu icon, but instead it's going to slide in from the right*/
+
+.userIcon {
+    cursor: pointer;
+    width: 4rem;
+    height: 4rem;
+}
+
+.userIcon img {
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+}
+
+.userSidebar {
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    position: fixed;
+    top: 10vh;
+    right: -15vw; /* Start hidden */
+    width: 15vw;
+    height: 100vh;
+    background-color: #333;
+    color: white;
+    transition: right 0.3s ease-in-out;/*sliding animation */
+    box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.5);
+    z-index: 100000;
+}
+
+
+.userSidebar.open {
+    right: 0; /* Slide into view */
+}
+
+.userSidebar h3 {
+    margin: 20px 0;
+    cursor: pointer;
+}

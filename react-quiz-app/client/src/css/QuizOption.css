@@ -1,0 +1,27 @@
+.quizOption{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    gap: 1rem;
+}
+
+.quizOption .ellipse{/* need to use js at some point to limit character limit so that text doesn't keep on continung after elippse */
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    font-size: 1rem;
+    background-color: grey;
+    border: 2px solid rgb(41, 40, 40);
+    border-radius: 50%;
+    width: 10rem;
+    height: auto;
+    padding: 2rem;
+    overflow-wrap: break-word;
+    white-space: normal;
+    resize: none;
+    overflow: hidden;
+}
+input[type="radio"] {
+    transform: scale(2); /* trying to make the radio buttons bigger */
+  }
