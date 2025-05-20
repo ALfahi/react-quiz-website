@@ -1,10 +1,6 @@
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-
+import { getFileContent } from './general.js';
 
 // This is a general function which is used to send an email.
 //
@@ -52,12 +48,7 @@ export async function sendVerificationEmail(token, username, email)
     const sender = `"QuizMania" <${process.env.EMAIL}>`;
     const subject = 'Verify and create your QuizMania account';
 
-    // creating a directory name variable so we can easily grab the correct email html file:
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = dirname(__filename);
-   // Path to the HTML file
-    const filePath = path.join(__dirname, '..', 'emails', 'accountActivation.html');
-    let body = fs.readFileSync(filePath, 'utf8');
+    let body = getFileContent( '../emails/accountActivation.html')
 
     // Replace the placeholders with actual values
     body = body.replace('{{username}}', username)

@@ -95,7 +95,7 @@ export async function invalidatePendingUserToken(email, token)
         { $set: 
         { 
             updatedAt: new Date() ,// Update the timestamp to invalidate old expired tokens
-            verificationToken: token, // Update the timestamp to invalidate old expired tokens
+            verificationToken: token, // replace the token with the new one to invalidate previous, non expired tokens.
         }, 
         },
     );

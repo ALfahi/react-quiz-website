@@ -108,3 +108,13 @@ export async function verifyUser(req, res)
     }
 }
 
+// This function will login the user to the website:
+// route POST login
+//
+export async function loginUser(req, res)
+{
+    const {username, password} = req.query;
+    
+
+}
+
