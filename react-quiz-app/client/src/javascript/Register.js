@@ -120,10 +120,11 @@ export function hasValidationErrors(usernameErrors, passwordErrors, confirmPassw
 // This function just submits the data into the backEnd via register user which will send an email, it then redirects to the next page
 // which will be used to actually show the status of the email.
 //
-export async function submitForm(username, email, password, navigate, setMessage) 
+export async function submitForm(username, email, password, navigate, setMessage, setLoading) 
 {
-
+   setLoading(true);
    const response = await registerUser(username, email, password);
+   setLoading(false);
    if(!response)
    {
         setMessage("something went wrong");
@@ -146,5 +147,4 @@ export async function submitForm(username, email, password, navigate, setMessage
    {
     setMessage(data.message)
    }
-
 }

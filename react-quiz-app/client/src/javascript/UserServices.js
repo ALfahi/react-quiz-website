@@ -63,10 +63,11 @@ export async function doesUserExist(username)
 
 // This function just resends the verification email when the user wants to activate their account
 //
-export async function resendVerificationEmail(username, email)
+export async function resendVerificationEmail(username, email, setLoading)
 {
     try{
-        console.log(username, email);
+
+        setLoading(true)
         const response = await fetch('http://localhost:3001/api/users/resendVerificationEmail', 
             {
             method: 'POST',
@@ -75,10 +76,12 @@ export async function resendVerificationEmail(username, email)
         });
     
         await response.json();
+        setLoading(false)
     }
     catch(err)
     {
         console.log(err);
+        setLoading(false);
     }
 }
 

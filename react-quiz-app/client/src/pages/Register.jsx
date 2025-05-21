@@ -2,6 +2,7 @@ import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 // /src/ so that we can go into components. 
 import Textbox from "../components/Textbox"; 
+import Spinner from "../components/Spinner"
 import ErrorList from "../components/ErrorList"; 
 import "../css/Form.css";
 
@@ -23,11 +24,12 @@ function Register()// TO DO: MAKE SURE THAT WE ONLY LIMIT ONE EMAIL PER DATABASE
     const [confirmPasswordErrors, setConfirmPasswordErrors] = useState([]);
 
     const [message, setResponse] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const handleSubmit = (e) => {
         e.preventDefault();
-        submitForm(username, email, password, navigate, setResponse); // just pass navigate
+        submitForm(username, email, password, navigate, setResponse, setLoading); // just pass navigate
       };
 
 
@@ -50,13 +52,15 @@ function Register()// TO DO: MAKE SURE THAT WE ONLY LIMIT ONE EMAIL PER DATABASE
                 <ErrorList errors = {confirmPasswordErrors} color = "red"></ErrorList>
 
 
-                <button type = "submit" disabled = {hasValidationErrors(usernameErrors, passwordErrors, confirmPasswordErrors)}>
+                <button type = "submit" disabled = {hasValidationErrors(usernameErrors, passwordErrors, confirmPasswordErrors) ||loading}>
                     Register</button>
             </form>
 
             {message && (
                 <p className = "response">{message}</p>
             )}
+
+            {loading &&<Spinner message="Loading..." />}
         </main>
         </>
         

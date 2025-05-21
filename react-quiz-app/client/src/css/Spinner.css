@@ -1,0 +1,9 @@
+.loadingBar{
+    display:flex;
+    margin: 1rem 0;
+}
+
+.loadingMessage{
+    font-size: 1rem;
+    color: grey;
+}

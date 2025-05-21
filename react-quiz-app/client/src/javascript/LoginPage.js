@@ -5,23 +5,32 @@ import { handleUserLogin } from "./UserServices";
 // otherwise do nothing
 // it also displays the back end message to the front end.
 //
-export async function handleSubmit(usernameOrEmail, password, setMessage, navigate)
+export async function handleSubmit(usernameOrEmail, password, setMessage, navigate, setLoading)
 {
-    const response = await handleUserLogin(usernameOrEmail, password);
-    if (!response)// response is somehow null
-    {
-        setMessage("something has went wrong, please try again");
-        return
+    try{
+        setLoading(true);
+        const response = await handleUserLogin(usernameOrEmail, password);
+        setLoading(false);
+        if (!response)// response is somehow null
+        {
+            setMessage("something has went wrong, please try again");
+            return
+        }
+        const data =  await response.json();
+        if (response.ok)
+        {
+            storeUserToken(data.token);
+            // redirect to the quiz menu page
+            setTimeout(() => {
+                navigate('/QuizMenu');
+            }, 3000);
+            
+        }
+        setMessage(data.message);// display the message from back end to client side.
     }
-    const data =  await response.json();
-    if (response.ok)
+    catch(error)
     {
-        storeUserToken(data.token);
-        // redirect to the quiz menu page
-        setTimeout(() => {
-            navigate('/QuizMenu');
-        }, 3000);
-        
+        console.log(error);
     }
-    setMessage(data.message);// display the message from back end to client side.
+    
 }
