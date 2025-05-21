@@ -101,3 +101,19 @@ export async function invalidatePendingUserToken(email, token)
     );
 }
  
+// Checks if the password and username/ email matches the one in the database (returns boolean)
+export async function isValidUser(usernameOrEmail, password) {
+    try {
+        const user = await Users.findOne( {$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]});
+        if (!user) 
+        {
+            return false;
+        }
+
+        const match = await bcrypt.compare(password, user.password);
+        return match;
+    } catch (error) {
+        console.error('Error checking password:', error);
+        return false;
+    }
+}

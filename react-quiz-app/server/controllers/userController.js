@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
-import { isExistingUser, handleRequestVerification, createUser, invalidatePendingUserToken} from '../utils/userServices.js';
+import { isExistingUser, handleRequestVerification, createUser, 
+    invalidatePendingUserToken, isValidUser} from '../utils/userServices.js';
 import { createEmailVerificationToken, sendVerificationEmail } from '../utils/emailHelpers.js';
 import PendingUsers from '../models/pendingUserModel.js';
-
+import Users from '../models/userModel.js';
 // Route: POST /api/users/isDuplicateUser
 // This function is used to allow the client side to check if a username exists or not.
 export async function checkDuplicateUsername(req, res) 
@@ -113,8 +114,29 @@ export async function verifyUser(req, res)
 //
 export async function loginUser(req, res)
 {
-    const {username, password} = req.query;
-    
+    const {usernameOrEmail, password} = req.body;
+    console.log(req.body);
+    try{
+        const isUserValid = await isValidUser(usernameOrEmail, password);// users can login with either email or username.
+        console.log(isUserValid);
+        if (!isUserValid)
+        {
+            return res.status(400).json({message: "invalid username or password"});
+        }
+        else
+        {
+            // getting the user so we can create the token.
+            const user = await Users.findOne( {$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]});
+            const token = jwt.sign({ username: user.username, email: user.email }, process.env.JWT_SECRET, { expiresIn: '12h' });
+            return res.status(202).json({token: token, message:"successfully logged in"});
+        }
+    }
+    catch(error)
+    {
+        console.log(error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+
 
 }
 

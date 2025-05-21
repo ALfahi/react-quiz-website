@@ -81,3 +81,23 @@ export async function resendVerificationEmail(username, email)
         console.log(err);
     }
 }
+
+// This function sends the values that the user typed into the text fields back into backend for authorisation.
+//
+export async function handleUserLogin(usernameOrEmail, password)
+{
+    try{
+        const response = await fetch('http://localhost:3001/api/users/login',
+        {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({usernameOrEmail, password})
+        });
+    
+       return response;
+    }
+    catch(error)
+    {
+        console.log(error);
+    }
+}
