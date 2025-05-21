@@ -1,5 +1,3 @@
-import Card from "../components/Card";
-
 
 export function editImage(setImage, newImage)// get's passed in a newImage url.
 {
