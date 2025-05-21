@@ -22,10 +22,12 @@ function Register()// TO DO: MAKE SURE THAT WE ONLY LIMIT ONE EMAIL PER DATABASE
     const [confirmPassword, setConfirmPassword] = useState("");
     const [confirmPasswordErrors, setConfirmPasswordErrors] = useState([]);
 
+    const [message, setResponse] = useState("");
+
     const navigate = useNavigate();
     const handleSubmit = (e) => {
         e.preventDefault();
-        submitForm(username, email, password, navigate); // just pass navigate
+        submitForm(username, email, password, navigate, setResponse); // just pass navigate
       };
 
 
@@ -51,6 +53,10 @@ function Register()// TO DO: MAKE SURE THAT WE ONLY LIMIT ONE EMAIL PER DATABASE
                 <button type = "submit" disabled = {hasValidationErrors(usernameErrors, passwordErrors, confirmPasswordErrors)}>
                     Register</button>
             </form>
+
+            {message && (
+                <p className = "response">{message}</p>
+            )}
         </main>
         </>
         

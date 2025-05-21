@@ -20,12 +20,12 @@ export async function registerUser(username, email, password)
             })
         });
 
-        const data = await response.json(); 
-        return data;
+       return response
     }
     catch(err)
     {
         console.log(err);
+        return null;
 
     }
     

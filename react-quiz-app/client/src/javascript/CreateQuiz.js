@@ -20,6 +20,7 @@ export function updateTotalQuestions(event, setQuestions)
 export function submit(e, quizTitle, newImage, totalQuestions, navigate)
 {
     e.preventDefault();
+    // Replace local storage by instead uploading to server.
     localStorage.setItem('quizTitle', quizTitle);
     localStorage.setItem('imageBanner', newImage);// later make sure to upload it to a srveer and generate a public url so everone can see it.
     localStorage.setItem('totalQuestions', totalQuestions);

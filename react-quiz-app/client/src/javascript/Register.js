@@ -120,18 +120,31 @@ export function hasValidationErrors(usernameErrors, passwordErrors, confirmPassw
 // This function just submits the data into the backEnd via register user which will send an email, it then redirects to the next page
 // which will be used to actually show the status of the email.
 //
-export async function submitForm(username, email, password, navigate) 
+export async function submitForm(username, email, password, navigate, setMessage) 
 {
 
    const response = await registerUser(username, email, password);
-   console.log(response);
-   navigate('/VerifyEmail', {
-    state: {
-     justSent: true,// makes sure that the only way that the user can access the verify email page is from here and / or the email link.
-     username: username,
-     email: email,
-     // we pass in the username and email so our resend email button (on next page) has enough information to actually 
-     // resend the email.
-    }
-  });
+   if(!response)
+   {
+        setMessage("something went wrong");
+        return;
+   }
+   const data = await response.json()
+   if (response.ok)
+   {
+    navigate('/VerifyEmail', {
+        state: {
+         justSent: true,// makes sure that the only way that the user can access the verify email page is from here and / or the email link.
+         username: username,
+         email: email,
+         // we pass in the username and email so our resend email button (on next page) has enough information to actually 
+         // resend the email.
+        }
+      });
+   }
+   else
+   {
+    setMessage(data.message)
+   }
+
 }
