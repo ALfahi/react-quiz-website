@@ -115,10 +115,8 @@ export async function verifyUser(req, res)
 export async function loginUser(req, res)
 {
     const {usernameOrEmail, password} = req.body;
-    console.log(req.body);
     try{
         const isUserValid = await isValidUser(usernameOrEmail, password);// users can login with either email or username.
-        console.log(isUserValid);
         if (!isUserValid)
         {
             return res.status(400).json({message: "invalid username or password"});
@@ -127,7 +125,7 @@ export async function loginUser(req, res)
         {
             // getting the user so we can create the token.
             const user = await Users.findOne( {$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]});
-            const token = jwt.sign({ username: user.username, email: user.email }, process.env.JWT_SECRET, { expiresIn: '12h' });
+            const token = jwt.sign({ username: user.username, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '3h' });
             return res.status(202).json({token: token, message:"successfully logged in"});
         }
     }
@@ -137,6 +135,33 @@ export async function loginUser(req, res)
         return res.status(500).json({ message: "Internal server error" });
     }
 
+}
+
+// This function is used to refresh a user's jwt token for when they want to stay logged in:
+//
+export function refreshLoginToken(req, res)
+{
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token)// or just logout.
+    {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+    try
+    {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);// use the old token information to make the new one.
+
+        const newToken = jwt.sign(
+            { username: decoded.username, email: decoded.email, role: decoded.role},
+            process.env.JWT_SECRET,
+            { expiresIn: '3h' }
+        );
+
+        return res.status(201).json({ token: newToken});// optional: add a message telling user that their session is renewed.
+    } 
+    catch (err) // just logout
+    {
+        res.status(403).json({ message: 'Invalid or expired token' });
+    }
 
 }
 

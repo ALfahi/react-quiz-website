@@ -99,7 +99,6 @@ async function validateUsername(username) {
     // check if username already exists:
     if (duplicateUser)
     {
-        console.log(username);
         errors.push("Username already in use");
     }
 

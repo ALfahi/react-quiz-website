@@ -2,6 +2,7 @@
 This file contains all the functions which connects my front end code to my back end code.
 */
 
+import { storeUserToken } from "./StorageUtils";
 // This function gets the username, password and email from the front end and then creates a new user in the backend database.
 // returns a boolean value of whether or not the user was successfully created in the database or not.
 //
@@ -103,4 +104,29 @@ export async function handleUserLogin(usernameOrEmail, password)
     {
         console.log(error);
     }
+}
+
+// This function sends the old token to the back end for it to be renewed.
+//
+export async function refreshLoginToken()
+{
+    const token = localStorage.getItem("user token");
+    if (!token)// if token is missing or expired just do nothing (user will need to have login normally.)
+    {
+        return
+    }
+    const response = await fetch("http://localhost:3001/api/users/refreshLogin", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const data = await response.json();
+    if (response.ok)
+    {
+        storeUserToken(data.token);
+    }
+
 }

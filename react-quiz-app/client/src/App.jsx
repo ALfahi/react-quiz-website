@@ -2,6 +2,7 @@ import { HashRouter as Router, Routes, Route} from 'react-router-dom';
 
 //importing components
 import Header from "./components/Header";
+import LoginWarning from './components/LoginWarning';
 
 // importing pages
 import Home from './pages/Home';
@@ -18,9 +19,11 @@ import BuildQuiz from './pages/BuildQuiz';
 import VerifyEmailPage from './pages/VerifyEmail';
 
 
-function App() {
+function App() 
+{
   return(
-    // Rendering in the pages
+    <>
+      {/*Rendering in the pages*/}
 
       <Router>
         <Header className = "Header">
@@ -42,6 +45,8 @@ function App() {
             </Routes>
           </div>
     </Router>
+    <LoginWarning/>
+  </>
   )
 }
 

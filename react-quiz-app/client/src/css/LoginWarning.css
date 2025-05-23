@@ -1,0 +1,50 @@
+.loginWarning{
+    /* center it within screen */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50vw;
+    height: 60vh;
+    background-color: #ffffff;
+    color: black;
+    border-radius: 0.5rem;
+    box-shadow: 0.5rem 0.5rem 0.5rem hsla(0, 0%, 0%, 0.3);
+    padding: 2rem;
+    /* push buttons down to bottom of pop up */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.loginWarning:not([open]) {/* makes sure that when the dialog is closed, it is not rendered */
+    display: none;
+  }
+#warningTitle, .warningDescription{
+    text-align: center;
+}
+
+.warningDescription{
+    color: black
+}
+
+strong{
+    color: red;
+}
+.loginWarning::backdrop {
+    background: rgba(0, 0, 0, 0.5); /*  dark backdrop */
+  }
+
+  .popUpButtons{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .text {
+    flex-grow: 1; /* let buttons take remaining space vertically*/
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
