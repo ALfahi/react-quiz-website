@@ -1,36 +1,21 @@
 
 import { storeUserToken } from "./StorageUtils";
-import { handleUserLogin } from "./UserServices";
+import { handleApiCallWithFeedback, handleUserLogin } from "./UserServices";
 // This function just checks if user was inputted in correct information to the login form, if so then redirect to the quiz menu page
 // otherwise do nothing
 // it also displays the back end message to the front end.
 //
-export async function handleSubmit(usernameOrEmail, password, setMessage, navigate, setLoading)
-{
-    try{
-        setLoading(true);
-        const response = await handleUserLogin(usernameOrEmail, password);
-        setLoading(false);
-        if (!response)// response is somehow null
-        {
-            setMessage("something has went wrong, please try again");
-            return
-        }
-        const data =  await response.json();
-        if (response.ok)
-        {
-            storeUserToken(data.token);
-            // redirect to the quiz menu page
-            setTimeout(() => {
-                navigate('/QuizMenu');
-            }, 3000);
-            
-        }
-        setMessage(data.message);// display the message from back end to client side.
-    }
-    catch(error)
-    {
-        console.log(error);
-    }
-    
-}
+export async function handleSubmit(usernameOrEmail, password, setMessage, navigate, setLoading) {
+    await handleApiCallWithFeedback({
+      asyncFunc: () => handleUserLogin(usernameOrEmail, password),
+      setMessage,
+      setLoading,
+      successMessage: "Logged in successfully, redirecting...",
+      onSuccess: (data) => {
+        storeUserToken(data.token);  // you now get the `data` here, so you can access `data.token`
+      },
+      navigateTo: '/QuizMenu',
+      navigate,
+    });
+  }
+  

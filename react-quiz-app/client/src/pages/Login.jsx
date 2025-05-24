@@ -38,6 +38,8 @@ function Login(){
                     </div>
                     <p className = "response">{response}</p>{/* response from back end */}
             </form>
+
+            {loading &&<Spinner message="Loading..." />}
         </main>
         </>
         

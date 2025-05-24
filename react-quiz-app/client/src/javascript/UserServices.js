@@ -130,3 +130,98 @@ export async function refreshLoginToken()
     }
 
 }
+
+//This function is used to send an email for the user to reset their password when they have forgotten their password.
+//
+export async function sendResetPasswordEmail(email)
+{
+    const response = await fetch("http://localhost:3001/api/users/sendResetPasswordEmail", {
+        method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({email})
+    });
+
+    return response
+
+}
+
+// This function gets a token and validates it for the reset password call.
+//
+export async function validateResetPasswordToken(token) {
+    const response = await fetch(`http://localhost:3001/api/users/verifyPasswordReset?token=${token}`, {
+        method: 'GET'
+    });
+
+    return response;
+}
+
+// This function just gets a token and a password and then sends it to the back end so they can update the database
+// or tell front end of any errors e.g. token expired.
+//
+export async function resetPassword(token, newPassword)
+{
+    const response = await fetch("http://localhost:3001/api/users/resetPassword", {
+        method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({token, newPassword})
+    });
+
+    return response;
+}
+
+
+
+
+// This general function is used to perform api calls to the back end and then also display the responses to front end
+// and also navigate to other pages if needed (e.g. used in login, forgotten password, etc etc)
+//
+export async function handleApiCallWithFeedback({
+    asyncFunc,// the api call that we are calling (all of them is going to be async e.g. await response.)
+    setMessage,
+    setLoading,// loading flag to show the spinner for when an api call is being made
+    successMessage,
+    errorMessage = "An error has occurred, please try again.",
+    onSuccess,// optional function that runs when the response was successful.
+    navigateTo,// desitination page.
+    navigate,// useNavigate object.
+    navigateState = {},  // adds flexability for when you want to add in states before moving onto next page.
+    redirectDelay = 1000,// 1 second
+    }) {
+        try {
+        // set up the loading flags to disable submit button on pages and display the spinner.
+        setLoading(true);
+        const response = await asyncFunc();
+        setLoading(false);
+    
+        if (!response) {
+            setMessage(errorMessage);
+            return;
+        }
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+            setMessage(data.message || successMessage);
+    
+            if (onSuccess) onSuccess(data);// run extra function here if needed.
+    
+            if (navigate && navigateTo) {
+            setLoading(true);
+            // redirect to page after a success.
+            setTimeout(() => {
+                navigate(navigateTo, { state: navigateState });
+                // clean up
+                setLoading(false);
+                setMessage("");
+            }, redirectDelay);
+            }
+            return;
+        }
+    
+        setMessage(data.message || errorMessage);
+        } catch (error) {
+        console.error(error);
+        setLoading(false);
+        setMessage(errorMessage);
+        }
+    }

@@ -1,5 +1,5 @@
-import { validateTextLength, displayResponseStatusMessages} from "./Utils";
-import { registerUser, doesUserExist } from "./UserServices";
+import { validateTextLength} from "./Utils";
+import { registerUser, doesUserExist, handleApiCallWithFeedback} from "./UserServices";
 /************* functions for passwords *********/
 
 
@@ -119,31 +119,23 @@ export function hasValidationErrors(usernameErrors, passwordErrors, confirmPassw
 // This function just submits the data into the backEnd via register user which will send an email, it then redirects to the next page
 // which will be used to actually show the status of the email.
 //
-export async function submitForm(username, email, password, navigate, setMessage, setLoading) 
-{
-   setLoading(true);
-   const response = await registerUser(username, email, password);
-   setLoading(false);
-   if(!response)
-   {
-        setMessage("something went wrong");
-        return;
-   }
-   const data = await response.json()
-   if (response.ok)
-   {
-    navigate('/VerifyEmail', {
-        state: {
-         justSent: true,// makes sure that the only way that the user can access the verify email page is from here and / or the email link.
-         username: username,
-         email: email,
-         // we pass in the username and email so our resend email button (on next page) has enough information to actually 
-         // resend the email.
-        }
-      });
-   }
-   else
-   {
-    setMessage(data.message)
-   }
-}
+export async function submitForm(
+    username, email, password,
+    navigate, setMessage, setLoading
+  ) {
+    await handleApiCallWithFeedback({
+      asyncFunc: () => registerUser(username, email, password),
+      setMessage,
+      setLoading,
+      onSuccess: () => {
+        navigate('/VerifyEmail', {
+          state: {
+            justSent: true,
+            username,
+            email,
+          }
+        });
+      },
+      errorMessage: "Failed to register user, please try again.",
+    });
+  }

@@ -20,6 +20,7 @@ function Header(){
         "/PendingQuiz": "Pending Quizzes",
         "/BuildQuiz": "Quiz Builder",
         "/VerifyEmail": "Verify Email",
+        "/ResetPassword": "Reset Password",
     };
 
     // Get the current page title, or show "Page Not Found" if unknown

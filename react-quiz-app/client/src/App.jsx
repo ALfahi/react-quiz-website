@@ -17,6 +17,7 @@ import CreateQuiz from './pages/CreateQuiz';
 import PendingQuiz from './pages/PendingQuiz';
 import BuildQuiz from './pages/BuildQuiz';
 import VerifyEmailPage from './pages/VerifyEmail';
+import ResetPassword from './pages/ResetPassword';
 
 
 function App() 
@@ -42,6 +43,7 @@ function App()
               <Route path = "/PendingQuiz" element = {<PendingQuiz/>}/>
               <Route path = "/BuildQuiz" element = {<BuildQuiz/>}/>
               <Route path = "/VerifyEmail" element = {<VerifyEmailPage/>}/>
+              <Route path = "/ResetPassword" element = {<ResetPassword/>}/>
             </Routes>
           </div>
     </Router>
