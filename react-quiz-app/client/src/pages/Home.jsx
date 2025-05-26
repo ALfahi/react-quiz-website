@@ -8,11 +8,11 @@ function Home(){
         <>
         <main>
             <div className = "homeContainer">
-                <Link to = "/Login">
+                <Link to = "/login">
                     <Button text = "Login" className = "homeButton"></Button>
                 </Link>
 
-                <Link to = "/Register">
+                <Link to = "/register">
                     <Button text = "Register" className = "homeButton"></Button>
                 </Link>
             </div>

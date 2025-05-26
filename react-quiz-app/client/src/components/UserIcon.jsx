@@ -3,8 +3,9 @@ import { Link } from "react-router-dom";
 import "../css/UserIcon.css";
 
 import profilePicture from "../assets/defaultPfp.jpg";
-
+import { useAuth } from "../contexts/AuthContext"
 function UserIcon() {
+    const {user, logout} = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const userIconRef = useRef(null);
     const userSidebarRef = useRef(null);
@@ -40,20 +41,43 @@ function UserIcon() {
                 <img src={profilePicture} alt="profile menu" />
             </div>
             <section className={`userSidebar ${isOpen ? "open" : ""}`} ref={userSidebarRef}>
-                <h3>Log Out</h3>
-
-                <Link to = "/ChangeEmail">
-                    <h3>Change Account Email</h3>
-                </Link>
-                <Link to = "/QuizStatus">
-                    <h3>Quiz Status</h3>
-                </Link>
-                <Link to = "/YourQuiz">
-                    <h3>Your Quizzes</h3>
-                </Link>
-                <Link to = "PendingQuiz">
-                    <h3>Pending Quizzes</h3>
-                </Link>
+                {user && (
+                        <>
+                            <button onClick = {logout}>Log Out</button>
+                            <Link to = "/change-email">
+                                <h3>Change Account Email</h3>
+                            </Link>
+                            <Link to = "/quiz-status">
+                                <h3>Quiz Status</h3>
+                            </Link>
+                            <Link to = "/your-quiz">
+                                <h3>Your Quizzes</h3>
+                            </Link>
+                            <Link to = "pending-quiz">
+                                <h3>Pending Quizzes</h3>
+                            </Link>
+                            {/* fill in admin links here */}
+                            {(user?.admin == 'admin') &&(
+                                <>
+                                </>
+                            )}
+                        </>
+                )
+                }
+                {
+                    !user &&(
+                        <>
+                            <Link to = "/login">
+                                <h3>Login</h3>
+                            </Link>
+                            <Link to = "/register">
+                                <h3>Register</h3>
+                            </Link>
+                        </>
+                    )
+                
+                }
+                
             </section>
         </>
     );

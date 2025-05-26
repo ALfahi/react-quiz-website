@@ -41,10 +41,10 @@ function Menu() {
                 <Link to="/">
                     <h3>Home</h3>
                 </Link>
-                <Link to="/Login">
+                <Link to="/login">
                     <h3>Login</h3>
                 </Link>
-                <Link to="/QuizMenu">
+                <Link to="/quiz-menu">
                     <h3>Quizzes</h3>
                 </Link>
             </section>

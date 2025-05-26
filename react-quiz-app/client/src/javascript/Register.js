@@ -128,7 +128,7 @@ export async function submitForm(
       setMessage,
       setLoading,
       onSuccess: () => {
-        navigate('/VerifyEmail', {
+        navigate('/verify-email', {
           state: {
             justSent: true,
             username,

@@ -11,7 +11,7 @@ export async function submitForm(token, password, setMessage, setLoading, naviga
       setMessage,
       setLoading,
       successMessage: "Password reset successful, redirecting...",
-      navigateTo: "/Login",
+      navigateTo: "/login",
       navigate,
       redirectDelay: 1000,
     });

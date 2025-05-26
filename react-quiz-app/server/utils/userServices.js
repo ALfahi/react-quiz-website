@@ -2,8 +2,9 @@
 import Users from '../models/userModel.js';
 import PendingUsers from '../models/pendingUserModel.js';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';// use crpyto to hash tokens.
 import { sendVerificationEmail } from '../utils/emailHelpers.js';
-import { createEmailVerificationToken } from './emailHelpers.js';
+import { createJwtToken } from './general.js';
 
 // This function is used to actually create a new user inside the database. If a duplicate username exists, then it will
 // simply just not create the user.
@@ -53,7 +54,7 @@ export async function isExistingUser(username)
 export async function handleRequestVerification({ username, email, password }) {
     try {
         // creating the token that we need
-        const token = createEmailVerificationToken({ username, email, password });;
+        const token = createJwtToken({ username, email, password }, '5m');
         // create the pending users entry
         await createPendingUser(username, email, password, token);
 
@@ -100,8 +101,42 @@ export async function invalidatePendingUserToken(email, token)
         },
     );
 }
+
+// This function creates a new UserReset token (returns plain text token), but hashes the token and stores that in db.
+//
+export async function createPasswordResetToken(email)
+{
+    const user = await Users.findOne({email});
+    if (!user)
+    {
+        return;
+    }
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = Date.now() + (15 * 60 * 1000); // 15 mins
+
+    await user.save();
+
+    return resetToken; // Sending plaintext token into email.
+}
+
+//This function is used to validate any resetTokens before allowing user to save thier updated password or access the reset password page.
+//
+export async function validatePasswordResetToken(token) 
+{
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await Users.findOne({ 
+      passwordResetToken: hashedToken, 
+      passwordResetExpires: { $gt: Date.now() }// token is not expired yet
+    });
+    return user;// will return null if the token is expired or invalid.
+}
+  
  
 // Checks if the password and username/ email matches the one in the database (returns boolean)
+//
 export async function isValidUser(usernameOrEmail, password) {
     try {
         const user = await Users.findOne( {$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]});
@@ -117,3 +152,21 @@ export async function isValidUser(usernameOrEmail, password) {
         return false;
     }
 }
+
+// This function just updates the password of an existing user.
+//
+export async function updateUserPassword(token, newPassword) 
+{
+    const user = await validatePasswordResetToken(token);
+    if (!user){
+        return { success: false, message: 'Invalid or expired token' };
+    }
+  
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+  
+    await user.save();
+    return { success: true, user };
+  }

@@ -19,6 +19,12 @@ import BuildQuiz from './pages/BuildQuiz';
 import VerifyEmailPage from './pages/VerifyEmail';
 import ResetPassword from './pages/ResetPassword';
 
+// importing the protectedPage wrapper class.
+import ProtectedPage from './components/ProtectedPage';
+
+// importing the NotFoundPage to act as an else cause if there is an invalid url.
+import NotFound from './pages/NotFound';
+
 
 function App() 
 {
@@ -32,18 +38,20 @@ function App()
           <div className = "Content">
             <Routes>
               <Route path = "/" element = {<Home/>}/>
-              <Route path = "/Login" element = {<Login/>}/>
-              <Route path = "/Register" element = {<Register/>}/>
-              <Route path = "/ForgottenPassword" element = {<ForgottenPassword/>}/>
-              <Route path = "/ChangeEmail" element = {<ChangeEmail/>}/>
-              <Route path = "/QuizMenu" element = {<QuizMenu/>}/>
-              <Route path = "/YourQuiz" element = {<YourQuiz/>}/>
-              <Route path = "/QuizStatus" element = {<QuizStatus/>}/>
-              <Route path = "/CreateQuiz" element = {<CreateQuiz/>}/>
-              <Route path = "/PendingQuiz" element = {<PendingQuiz/>}/>
-              <Route path = "/BuildQuiz" element = {<BuildQuiz/>}/>
-              <Route path = "/VerifyEmail" element = {<VerifyEmailPage/>}/>
-              <Route path = "/ResetPassword" element = {<ResetPassword/>}/>
+              <Route path = "/login" element = {<Login/>}/>
+              <Route path = "/register" element = {<Register/>}/>
+              <Route path = "/forgotten-password" element = {<ForgottenPassword/>}/>
+              <Route path = "/change-email" element = {<ProtectedPage page = {<ChangeEmail/>}/>}/>
+              <Route path = "/quiz-menu" element = {<QuizMenu/>}/>
+              <Route path = "/your-quiz" element = {<ProtectedPage page = {<YourQuiz/>}/>}/>
+              <Route path = "/quiz-status" element ={<ProtectedPage page = {<QuizStatus/>}/>}/>
+              <Route path = "/create-quiz" element = {<ProtectedPage page = {<CreateQuiz/>}/>}/>
+              <Route path = "/pending-quiz" element = {<ProtectedPage page = {<PendingQuiz/>}/>}/>
+              <Route path = "/build-quiz" element = {<ProtectedPage page = {<BuildQuiz/>}/>}/>
+              <Route path = "/verify-email" element = {<VerifyEmailPage/>}/>
+              <Route path = "/reset-password" element = {<ResetPassword/>}/>
+               {/* Catch-all route for 404 */}
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
     </Router>

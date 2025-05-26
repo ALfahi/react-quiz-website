@@ -28,7 +28,7 @@ export async function redirectToResetPasswordPage(token, navigate, setMessage, s
    onSuccess: () => {// using onSuccess here to add in the navigate state.
       setLoading(true);
       setTimeout(() => {
-      navigate("/ResetPassword", {
+      navigate("/reset-password", {
          state: {
             token: token,
             justSent: true,

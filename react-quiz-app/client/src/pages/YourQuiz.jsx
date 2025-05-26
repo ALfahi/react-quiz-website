@@ -24,7 +24,7 @@ function YourQuiz(){
                 </section>
 
                 <aside>
-                    <Link to = "../CreateQuiz">
+                    <Link to = "../create-quiz">
                         <Button text = "create quiz"></Button>
                     </Link>
                 </aside>

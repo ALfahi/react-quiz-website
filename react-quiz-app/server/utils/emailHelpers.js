@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import jwt from 'jsonwebtoken';
 import { getFileContent } from './general.js';
 
 // This is a general function which is used to send an email.
@@ -27,31 +26,46 @@ async function sendMail(sender, recepient, subject, body)
     await transporter.sendMail(mail);
 }
 
-// This function is used to create the actual token which is needed for the user to validate their email (and then used to create the account)
-// returns the actual token
+// This is a general function to send emails with a specific template:
+// optional replacements is an array of values inside emails which need to be replaced (adds more flexability) e.g. username: John Doe
+// resetCode: 123 etc.
 //
-export function createEmailVerificationToken({username, email, password})
-{
-    // creating a token to securely send email and recieve the email.
-    const token = jwt.sign({ username, email, password },process.env.JWT_SECRET, { expiresIn: '5min' });
-    return token;
+async function sendTemplatedEmail({token, email, subject, templatePath, redirectPage,optionalReplacements = {}  }) {
+    const sender = `"QuizMania" <${process.env.EMAIL}>`;
+    const baseUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const verificationLink = `${baseUrl}/#/${redirectPage}?token=${token}`;
+  
+    let body = getFileContent(templatePath);
+  
+    // Always replace the verification link
+    body = body.replace('{{verificationLink}}', verificationLink);
+  
+    // Apply optional replacements (e.g., {{username}}, {{resetCode}})
+    for (const [key, value] of Object.entries(optionalReplacements)) {
+      const placeholder = `{{${key}}}`;
+      body = body.replace(new RegExp(placeholder, 'g'), value);
+    }
+  
+    await sendMail(sender, email, subject, body);
+  }
 
-}
+/*******Publicly exposed functions *******/
 
 //This function is used to specifically send a verification email to the user so they can activate their account:
 //
-export async function sendVerificationEmail(token, username, email)
+export async function sendVerificationEmail(token, username, email) 
 {
-    // this link will link back to the backend so that once user clicks on it, the verify user function will be run.
-    const verificationLink = `http://localhost:5173/#/VerifyEmail?token=${token}`;
-    // creating all the indiivisual components for the email sending:
-    const sender = `"QuizMania" <${process.env.EMAIL}>`;
-    const subject = 'Verify and create your QuizMania account';
+    await sendTemplatedEmail({token,email,
+        subject: 'Verify and create your QuizMania account',templatePath: '../emails/accountActivation.html',
+        redirectPage: 'VerifyEmail', optionalReplacements: {username}});
+}
 
-    let body = getFileContent( '../emails/accountActivation.html')
-
-    // Replace the placeholders with actual values
-    body = body.replace('{{username}}', username)
-            .replace('{{verificationLink}}', verificationLink);
-    await sendMail(sender, email, subject, body);// actually sending the email
+// This function is used to send an email specifically to reset the password.
+//
+export async function sendPasswordResetEmail(token, email, username) 
+{
+    await sendTemplatedEmail({
+        token,email,
+        subject: 'Reset your QuizMania password',templatePath: '../emails/passwordReset.html',
+        redirectPage: 'ForgottenPassword', optionalReplacements: {username}});
 }

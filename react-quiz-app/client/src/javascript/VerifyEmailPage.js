@@ -47,7 +47,7 @@ export function useVerifyEmail() {
 
                     if (response.ok) {
                         setTimeout(() => {
-                            navigate('/Login');
+                            navigate('/login');
                         }, 5000);
                     }
 

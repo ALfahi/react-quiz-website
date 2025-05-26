@@ -13,7 +13,7 @@ function ChangeEmail(){
                 <Textbox defaultText = "Enter new email address"></Textbox>
             
                 <div className = "enterButton">
-                    <Link to = "/Login">
+                    <Link to = "/login">
                         <Button text = "enter"></Button>
                     </Link>
                 </div>
