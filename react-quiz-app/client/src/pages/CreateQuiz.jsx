@@ -1,5 +1,5 @@
 import "../css/CreateQuiz.css"
-import {useState} from "react"
+import {useState, useEffect} from "react"
 import {useNavigate} from 'react-router-dom'
 import Textbox from "../components/Textbox"
 import Card from "../components/Card"
@@ -10,18 +10,25 @@ import {updateQuizTitle, updateTotalQuestions, submit} from "../javascript/Creat
 function CreateQuiz(){
 
     // logic to change image
-    let [image, setImage] = useState(defaultImage);
-
-    let [title, setQuizTitle] = useState("");
-    let [score, setTotalScore] = useState("");
+    const [imageURL, setImageURL] = useState(defaultImage);
+    const [imageFile, setImageFile] = useState(null); // This is what we'll send to the backend if changed
+    const [title, setQuizTitle] = useState("");
+    const [score, setTotalScore] = useState(0);// keeps track total number of questions.
     // logic to display a preview of the quiz banner
-    let [display, showCard] = useState(false);
+    const [display, showCard] = useState(false);
     const navigate = useNavigate();
+
+    // we also need to clean up the image URL when the component unmounts or when the imageFile changes.
+    useEffect(() => {
+        return () => {
+            if (imageFile) URL.revokeObjectURL(imageURL);
+        };
+    }, [imageFile, imageURL]);
 
     return(
         <>
             <main>
-                <form onSubmit = {(e) => submit(e, title, image, score, navigate )}>
+                <form onSubmit = {(e) => submit(e, title, imageFile, score, navigate )}>
                     <Textbox defaultText = "Enter quiz name"  
                          onChange= {(e) => updateQuizTitle(e, setQuizTitle)} required = {true}></Textbox>
 
@@ -33,11 +40,12 @@ function CreateQuiz(){
 
                     <figure>
                         <div className = "imageContainer">
-                            <img src = {image} alt = "default quiz banner image"></img>
+                            <img src = {imageURL} alt = "default quiz banner image"></img>
                         </div>  
 
                         <div className = "imageButtons">
-                            <button type = "button" id = "reset" onClick = {() => editImage(setImage, defaultImage)}>reset</button>
+                            <button type = "button" id = "reset" onClick = {
+                                () => editImage(setImageURL, setImageFile, defaultImage, null)}>reset</button>
                             <button  type = "button" id  = "preview" onClick = {() => showCard(true)}>preview</button>
                         </div>
                     </figure>
@@ -45,7 +53,7 @@ function CreateQuiz(){
                     <div className = "sameLine">
                         <label htmlFor = "file">upload image file:</label>
                         <input type = "file" id = "file" accept=".png,.jpeg,.jpg,.bmp,.webp,.ico,.tiff"
-                        onChange={(e) => changeFileImage(e, setImage)}></input>{/* will automatically change the image */}
+                      onChange={(e) =>changeFileImage(e, setImageURL, setImageFile)}></input>{/* will automatically change the image */}
                     </div>
 
                     <input type = "submit" id = "submit"></input>
@@ -55,7 +63,7 @@ function CreateQuiz(){
                       <section className = "previewCard">
                         <button type = "button" id = "crossButton" onClick = {() => showCard(false)}>X</button>{/* close the preview 
                         pop up */}
-                      <Card imageLink = {image} username = "testing" quizName = {title} totalScore = {score}></Card>
+                      <Card imageLink = {imageURL} username = "testing" quizName = {title} totalScore = {score}></Card>
                   </section>
 
                 )}

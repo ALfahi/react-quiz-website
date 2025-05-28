@@ -17,13 +17,14 @@ export function updateTotalQuestions(event, setQuestions)
 
 }
 
-export function submit(e, quizTitle, newImage, totalQuestions, navigate)
+export function submit(e, quizTitle, imageFile, totalQuestions, navigate)
 {
+    console.log("total questions is", totalQuestions)
     e.preventDefault();
-    // Replace local storage by instead uploading to server.
-    localStorage.setItem('quizTitle', quizTitle);
-    localStorage.setItem('imageBanner', newImage);// later make sure to upload it to a srveer and generate a public url so everone can see it.
-    localStorage.setItem('totalQuestions', totalQuestions);
-    navigate('../build-quiz');// an instance of useNavigate();
+    navigate('../build-quiz', {state:{
+        quizTitle: quizTitle,
+        imageBanner: imageFile,// if it's the default image, then null is passed hence imageBanner is null.
+        totalQuestions: totalQuestions
+    }});// an instance of useNavigate();
 
 }

@@ -1,8 +1,10 @@
-
 // creates a an array of questions with default values for every question. Structure of each questions:
 // text: (what's the actual question)
 //options: an array of 4 possible options (these are the answer's and only one of them is correct)
 // answer: specifies which of the 4 possible options are correct.
+
+import { createQuiz, handleApiCallWithFeedback } from "./UserServices";
+
 //
 export function initialiseQuestions(totalQuestions) 
 {
@@ -12,7 +14,8 @@ export function initialiseQuestions(totalQuestions)
         let question = {
             questionText: "",
             options: ["option 1", "option 2", "option 3", "option 4"],
-            answer: 0
+            correctAnswer: 0,// key name must be same as the one in the db to prevent any errors.
+            // correctAnswer is also just the index of the options array, representing which one is correct.
         };
         questionList.push(question);
     }
@@ -50,29 +53,69 @@ export function updateCurrentQuestionData(currentQuestionData, field, value, isO
     return { ...currentQuestionData, [field]: value };
 }
 
-// this function saves the current question data into the array of questions and then moves onto the next question
+// This function is used to validate if the questions that the user typed in is valid (i.e. not empty) before they submit it
 //
-export function saveQuestion(
-    questions, currentIndex, currentQuestionData, 
-    setQuestions, setCurrentQuestion, setCurrentQuestionData, nextIndex
-) {
-    let updatedQuestions = [...questions];
-    updatedQuestions[currentIndex] = currentQuestionData;
+function areQuestionsEmpty(questions, setMessage) {
+    for (const question of questions) {
+      // Check question text
+      if (!question.questionText || question.questionText.trim() === "") {
+        setMessage("one or more of the question descriptions are empty.")
+        return true;
+      }
+  
+      // Check if options exist and not empty
+      if (!Array.isArray(question.options) || question.options.length === 0) {
+        setMessage("must have at least 2 options per question")
+        return true;
+      }
+  
+      // Check all options are filled
+      for (const option of question.options) {
+        if (!option || option.trim() === "") {
+            setMessage("one or more of the texts on the options are empty")
+            return true;
+        }
+      }
+  
+      // Check answer validity
+      if ( typeof question.correctAnswer !== "number" || question.correctAnswer < 0 || question.correctAnswer >= question.options.length) {
+        setMessage("one or more of the questions has an empty answer field.")
+        return true;
+      }
+    }
+    setMessage("");
+    return false; // no invalid data found
+  }
+  
 
-    setQuestions(updatedQuestions); 
-    // moving onto the next question and updating it's data.
-    setCurrentQuestion(nextIndex);
-    setCurrentQuestionData(updatedQuestions[nextIndex]);
-
-    return updatedQuestions; // Return the updated array
-}
-
-export function submit(questions)
+export async function submit(title, imageBanner, questions, user, setMessage, setLoading, navigate)
 {
+    if (!user)
+    {
+        console.error("user does not exist as time of creating quiz");
+        return;
+    }
+    if (areQuestionsEmpty(questions, setMessage))// some of the fields in questions are empty, can't submit.
+    {
+        return;
+    }
+    
+
+    const formData = new FormData();
     console.log(questions);
-    //console.log(Object.keys(localStorage)); // Lists all keys in localStorage
-    console.log(localStorage.getItem('imageBanner'));
-    console.log(localStorage.getItem('quizTitle'));
-    // also remeber to get the username
+    formData.append("username", user?.id);// just pass in the user's id instead of name to link the quiz to the user in db.
+    formData.append("questions", JSON.stringify(questions));// convert the questions array into a string.
+    formData.append("title", title);
+    formData.append("banner", imageBanner);
+
+    // now pass it into the back end for processing.
+    await handleApiCallWithFeedback({
+        asyncFunc: () => createQuiz(formData),
+        setMessage,
+        setLoading,
+        successMessage: "quiz has been successfully created",
+        navigateTo: "/quiz-menu",
+        navigate: navigate,
+    })
 
 }

@@ -1,10 +1,9 @@
 
-export function editImage(setImage, newImage)// get's passed in a newImage url.
-{
-    setImage(newImage);
+export function editImage(setImageURL, setImageFile, newURL, file = null) {
+    setImageURL(newURL);
+    setImageFile(file); // null means default image
 }
-
-export function changeFileImage(event, setImage)// setImage is a file Object from the input type = 'file attribute.
+export function changeFileImage(event, setImageURL, setImageFile)// setImage is a file Object from the input type = 'file attribute.
 {
     const file = event.target.files[0];// returns null if nothing in the array.
 
@@ -24,7 +23,7 @@ export function changeFileImage(event, setImage)// setImage is a file Object fro
     {
         // convert the passed in file into a url and then edit the banner image.
         const url = URL.createObjectURL(file);
-        editImage(setImage, url);
+        editImage(setImageURL, setImageFile, url, file);
     }
 }
 

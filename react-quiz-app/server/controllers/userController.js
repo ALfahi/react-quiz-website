@@ -148,7 +148,7 @@ export async function loginUser(req, res)
         {
             // getting the user so we can create the token.
             const user = await Users.findOne( {$or: [{ username: usernameOrEmail }, { email: usernameOrEmail }]});
-            const token = jwt.sign({ username: user.username, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2m' });
+            const token = jwt.sign({id: user._id, username: user.username, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '3h' });
             return res.status(202).json({token: token, message:"successfully logged in"});
         }
     }
@@ -174,9 +174,9 @@ export function refreshLoginToken(req, res)
         const decoded = jwt.verify(token, process.env.JWT_SECRET);// use the old token information to make the new one.
 
         const newToken = jwt.sign(
-            { username: decoded.username, email: decoded.email, role: decoded.role},
+            { id: decoded.id, username: decoded.username, email: decoded.email, role: decoded.role},
             process.env.JWT_SECRET,
-            { expiresIn: '2m' }
+            { expiresIn: '3h' }
         );
 
         return res.status(201).json({ token: newToken});// optional: add a message telling user that their session is renewed.

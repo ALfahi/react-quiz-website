@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // quizzes are created by users, but it isn't public yet and needs to be reviewed by admins first.
 const quizSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    imageUrl:{type: String, default: 'quiz-default-image.png'}, // default image for the quiz, can be changed later.
     questions: [
         {
             questionText: { type: String, required: true },
@@ -21,8 +21,13 @@ const quizSchema = new mongoose.Schema({
             playCount: { type: Number, default: 0 },
             averageScore: { type: Number, default: 0 },
         },
+    rejectedExpiresAt: { type: Date, default: null }, // If a quiz is rejected, this field will be set to the date when the quiz will automatically
+    // be deleted, default is null meaning it won't be deleted.
 
-});
+})
+
+// Automatically delete rejected quizzes when the rejectedExpiresAt date is reached
+quizSchema.index({ rejectedExpiresAt: 1 }, { expireAfterSeconds: 0 }); 
 
 const Quiz = mongoose.model('quizzes', quizSchema);
 

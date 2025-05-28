@@ -225,3 +225,18 @@ export async function handleApiCallWithFeedback({
         setMessage(errorMessage);
         }
     }
+
+    /******************* Quiz routes ************/
+
+// This function is used to connect the front end to the back end when creating a new quiz in the database.
+// since an image banner may exist for the quiz, we want to pass in formData.
+//
+export async function createQuiz(formData)
+{
+    const response = await fetch("http://localhost:3001/api/quizzes/createQuiz",{
+    method: 'POST',
+    body: formData,
+    })
+
+    return response;
+}

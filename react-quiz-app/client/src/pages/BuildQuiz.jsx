@@ -1,26 +1,90 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
     initialiseQuestions, 
     updateCurrentQuestionData, 
     onLastQuestion, 
     onFirstQuestion, 
-    saveQuestion,
     submit
 } from "../javascript/BuildQuiz";
-import {getTotalQuestionsLocal} from "../javascript/Utils";
+import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Button";
+import Spinner from "../components/Spinner"
 import QuizOption from "../components/QuizOption";
 
 import "../css/BuildQuiz.css";
 
 function BuildQuiz() {
-    const totalQuestions = getTotalQuestionsLocal();
-    const [questions, setQuestions] = useState(initialiseQuestions(totalQuestions)); // provides an array of a default blueprint for all questions
-    const [currentQuestion, setCurrentQuestion] = useState(0); // index to keep track of what question we are on.
+    const navigate = useNavigate();
+    const { user } = useAuth();
+    const location = useLocation();
+
+    // Try to recover quiz state from session storage
+    const savedState = sessionStorage.getItem("quizState");
+    const parsedSavedState = savedState ? JSON.parse(savedState) : null;
+
+    // Destructure state from either navigation or session storage
+    const {
+        quizTitle,
+        imageBanner,
+        totalQuestions
+    } = location.state || parsedSavedState || {};
+
+    // initialise questions from navigation state, sessionStorage, or default
+    const [questions, setQuestions] = useState(
+        parsedSavedState?.questions || initialiseQuestions(totalQuestions) || []
+    );
+    const [currentQuestion, setCurrentQuestion] = useState(parsedSavedState?.currentQuestion || 0);
 
     // only update the current question locally and save to the big questions array when we move onto a different question or finish
-    // improvs performance by a noticible margin, especially for large numbers of users.
-    const [currentQuestionData, setCurrentQuestionData] = useState(questions[currentQuestion]); 
+    // improves performance by a noticible margin, especially for large numbers of users.
+    const [currentQuestionData, setCurrentQuestionData] = useState(questions[currentQuestion]);
+
+    const [response, setResponse] = useState("");
+    const [loading, setLoading] = useState(false);
+
+
+    // Sync currentQuestionData to match selected index (loads new template question data when we go to a new question)
+useEffect(() => {
+    setCurrentQuestionData(questions[currentQuestion]);
+}, [currentQuestion]);
+
+// Update questions only if question data changed, used to update the questions array with the current questions data array.
+useEffect(() => {
+    setQuestions(prev => {
+        if (JSON.stringify(prev[currentQuestion]) === JSON.stringify(currentQuestionData)) {// stops any unnecssary rerenders.
+            return prev;
+        }
+
+        const updated = [...prev];
+        updated[currentQuestion] = currentQuestionData;
+        return updated;
+    });
+}, [currentQuestionData, currentQuestion]);
+
+
+    // we don't want to use local storage for storing quizzes as it's very finicky and a lot of extra code to manage properly
+    // instead we use react's state management and sessionStorage to store the quiz state so that 
+    // when we go to a separate page, the quiz is gone, but we also use session storage to save the quiz state so 
+    // that if the user refreshes the page, they can recover their quiz state.
+    useEffect(() => {
+        if (quizTitle && totalQuestions) {
+            sessionStorage.setItem(
+                "quizState",
+                JSON.stringify({ quizTitle, imageBanner, totalQuestions, questions, currentQuestion })
+            );
+        } else {
+            // If still nothing available, redirect to create quiz
+            navigate("/create-quiz");
+        }
+    }, [quizTitle, imageBanner, totalQuestions, questions, currentQuestion, navigate]);
+
+    // This use effect will run when this component unmounts (i.e user goes to another page), it will clear the session storage.
+    useEffect(() => {
+        return () => {
+            sessionStorage.removeItem("quizState");
+        };
+    }, []);
 
     return (
         <main>
@@ -31,7 +95,7 @@ function BuildQuiz() {
                 <textarea
                     placeholder="Enter question here..."
                     value={currentQuestionData.questionText}
-                    onChange={(e) => 
+                    onChange={(e) =>
                         setCurrentQuestionData(
                             updateCurrentQuestionData(currentQuestionData, "questionText", e.target.value)
                         )
@@ -42,22 +106,20 @@ function BuildQuiz() {
                 <div className="options">
                     {currentQuestionData.options.map((option, index) => (
                         <div key={index}>
-
-                            <QuizOption 
+                            <QuizOption
                                 text={option}
-                                picked={currentQuestionData.answer === index} 
-                                onTextChange={(newText) => 
+                                picked={currentQuestionData.correctAnswer === index}
+                                onTextChange={(newText) =>
                                     setCurrentQuestionData(
                                         updateCurrentQuestionData(currentQuestionData, "options", newText, true, index)
                                     )
                                 }
-                                onSelect={() => 
+                                onSelect={() =>
                                     setCurrentQuestionData(
-                                        updateCurrentQuestionData(currentQuestionData, "answer", index)// 'index' here is just the value
+                                        updateCurrentQuestionData(currentQuestionData, "correctAnswer", index)
                                     )
                                 }
-                             />
-
+                            />
                         </div>
                     ))}
                 </div>
@@ -67,43 +129,30 @@ function BuildQuiz() {
                 {/* Navigation Buttons */}
                 <div className="buttons">
                     {!onFirstQuestion(currentQuestion) && (
-                        <Button 
-                            text="Prev" 
-                            onClick={() => saveQuestion(
-                                questions, currentQuestion, currentQuestionData, 
-                                setQuestions, setCurrentQuestion, setCurrentQuestionData, 
-                                currentQuestion - 1)
-                            }
+                        <Button
+                            text="Prev"
+                            onClick={() => setCurrentQuestion(prev => prev - 1)}
                         />
                     )}
                     {!onLastQuestion(currentQuestion, totalQuestions) && (
-                        <Button 
-                            text="Next" className = "next"
-                            onClick={() => saveQuestion(
-                                questions, currentQuestion, currentQuestionData, 
-                                setQuestions, setCurrentQuestion, setCurrentQuestionData, 
-                                currentQuestion + 1)
-                            }
+                        <Button
+                            text="Next"
+                            className="next"
+                            onClick={() => setCurrentQuestion(prev => prev + 1)}
                         />
                     )}
-                    {/* if we are on the last question, replace next button with a finish button */}
-
                     {onLastQuestion(currentQuestion, totalQuestions) && (
-                        <Button 
-                            text="Finish" 
+                        <Button
+                            text="Finish"
                             onClick={() => {
-                                let updatedQuestions =saveQuestion(
-                                    questions, currentQuestion, currentQuestionData, 
-                                    setQuestions, setCurrentQuestion, setCurrentQuestionData, 
-                                    currentQuestion);
-                                submit(updatedQuestions);{/*make sure that we submit the most updated questions array*/}
+                                submit(quizTitle, imageBanner, questions, user, setResponse, setLoading, navigate);
                             }}
                         />
                     )}
-
-                  
                 </div>
+                <p className = "response">{response}</p>{/* response from back end */}
             </form>
+            {loading && <Spinner message = "loading..."/>}
         </main>
     );
 }
