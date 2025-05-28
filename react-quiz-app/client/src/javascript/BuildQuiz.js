@@ -5,6 +5,7 @@
 
 import { createQuiz, handleApiCallWithFeedback } from "./UserServices";
 
+// This function just initialises a question set with default values, which are then to be edited by users.
 //
 export function initialiseQuestions(totalQuestions) 
 {
@@ -16,19 +17,73 @@ export function initialiseQuestions(totalQuestions)
             options: ["option 1", "option 2", "option 3", "option 4"],
             correctAnswer: 0,// key name must be same as the one in the db to prevent any errors.
             // correctAnswer is also just the index of the options array, representing which one is correct.
+            image: null, // an optional image that users can upload that can can be in questions.
         };
         questionList.push(question);
     }
     return questionList;
 }
 
-// Conditional rendering functions
+// Removes an option from a question.
+// If the correct answer was removed, resets it to null so the user must choose again.
+export function removeOption(currentQuestion, indexToRemove, setCurrentQuestionData, setMessage) {
+
+    let options = currentQuestion.options;
+    let correctAnswer = currentQuestion.correctAnswer
+    console.log(currentQuestion);
+    console.log(options);
+    if (options.length > 2) {
+        const newOptions = options.filter((_, i) => i !== indexToRemove);
+
+        let newCorrectAnswer = correctAnswer;
+
+        // If the removed option was the correct answer
+        if (indexToRemove === correctAnswer) {
+            newCorrectAnswer = null;
+        }
+        // If the removed option was before the current correct answer index, shift the index down
+        else if (indexToRemove < correctAnswer) {
+            newCorrectAnswer = correctAnswer - 1;
+        }
+
+        setCurrentQuestionData({
+            ...currentQuestion,
+            options: newOptions,
+            correctAnswer: newCorrectAnswer
+        });
+    } else {
+        setMessage("You need at least 2 answer options!");
+        return;
+    }
+}
+
+// This function adds in a new option for the current question if the current question has less than 4 total options.
 //
+export function addOption(currentQuestion, setCurrentQuestionData, setMessage) {
+    const options = currentQuestion.options;
+
+    if (options.length >= 4) {
+        setMessage("You can only have up to 4 options.");
+        return;
+    }
+
+    const newOptions = [...options, `option ${options.length + 1}`];
+
+    setCurrentQuestionData({
+        ...currentQuestion,
+        options: newOptions,
+    });
+}
+
+// Conditional rendering functions
+
+// This function just keeps track if we are on the final question.
 export function onLastQuestion(currentIndex, totalIndex) 
 {
     return (currentIndex >= totalIndex - 1);
 }
 
+// This function keeps track if we are on the first question.
 export function onFirstQuestion(currentIndex) 
 {
     return (currentIndex <= 0)
@@ -78,7 +133,7 @@ function areQuestionsEmpty(questions, setMessage) {
       }
   
       // Check answer validity
-      if ( typeof question.correctAnswer !== "number" || question.correctAnswer < 0 || question.correctAnswer >= question.options.length) {
+      if (typeof question.correctAnswer !== "number" || question.correctAnswer < 0 || question.correctAnswer >= question.options.length) {
         setMessage("one or more of the questions has an empty answer field.")
         return true;
       }
@@ -99,7 +154,6 @@ export async function submit(title, imageBanner, questions, user, setMessage, se
     {
         return;
     }
-    
 
     const formData = new FormData();
     console.log(questions);

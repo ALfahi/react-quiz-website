@@ -5,26 +5,33 @@
 //
 
 import "../css/QuizOption.css"
-function QuizOption({ text, picked, onTextChange, onSelect, readOnly = false})
+function QuizOption({ text, picked, onTextChange, onSelect, onRemove, readOnly = false})
 {
     return (
-        <div className="quizOption">
-            {/* Input field for option text */}
-            <textarea
-                
-                value={text} 
-                readOnly={readOnly} 
-                onChange={(e) => onTextChange && onTextChange(e.target.value)}
-                className = "ellipse"
-            />
+        <>
+            <div className="quizOption">
 
-             {/* Radio button for selecting the correct answer */}
-             <input 
-                type="radio" 
-                checked={picked} 
-                onChange={onSelect}
-            />
-        </div>
+            {!readOnly && (/* a button to be used by quiz builders to remeove this option if necessary */
+                    <button type = "button" className = "removeButton" onClick = {onRemove}>X</button>
+                    )}
+                {/* Input field for option text */}
+                <textarea
+                    
+                    value={text} 
+                    readOnly={readOnly} 
+                    onChange={(e) => onTextChange && onTextChange(e.target.value)}
+                    className = "ellipse"
+                />
+
+                {/* Radio button for selecting the correct answer */}
+                <input 
+                    type="radio" 
+                    checked={picked} 
+                    onChange={onSelect}
+                />
+            </div>
+
+        </>
     );
 }
 

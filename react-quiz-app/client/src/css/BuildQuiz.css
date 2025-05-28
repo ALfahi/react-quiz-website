@@ -12,7 +12,7 @@ form{
     margin: auto;
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: 0.8rem;
 }
 
 textarea{
@@ -22,10 +22,35 @@ textarea{
 }
 .options, .buttons{
     display:flex;
+    flex-wrap: wrap; /* Allow wrapping if more than 2-3 options */
     justify-content: space-between;
     align-content: center;
 }
 
+.optionsContainer{
+    position: relative;
+    padding: 1rem 4rem;
+}
+
+.optionsContainer:hover{
+    border: 1px solid grey;
+}
+
+.addOptionButton{
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translate(0, -50%);
+    display: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+
+}
+
+.optionsContainer:hover .addOptionButton{
+    display:block;
+}
+    
 .next{
     margin-left: auto;
 }

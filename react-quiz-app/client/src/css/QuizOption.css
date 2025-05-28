@@ -4,6 +4,8 @@
     justify-content: center;
     align-content: center;
     gap: 1rem;
+    padding: 1.5rem;
+    position: relative;/* we will need this to be relavitve to move the button inside the quiz option as much as we need it to */
 }
 
 .quizOption .ellipse{/* need to use js at some point to limit character limit so that text doesn't keep on continung after elippse */
@@ -25,3 +27,28 @@
 input[type="radio"] {
     transform: scale(2); /* trying to make the radio buttons bigger */
   }
+
+/* Remove button hidden by default */
+.removeButton {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: red;
+    border-radius: 0%;
+    border: none;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: none;
+}
+
+
+/* Show remove button only on hover */
+.quizOption:hover .removeButton {
+    display: block;
+}
+
+.quizOption:hover{
+    border: 1px solid grey;
+}

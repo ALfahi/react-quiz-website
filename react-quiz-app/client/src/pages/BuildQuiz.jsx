@@ -5,7 +5,9 @@ import {
     updateCurrentQuestionData, 
     onLastQuestion, 
     onFirstQuestion, 
-    submit
+    submit,
+    removeOption,
+    addOption
 } from "../javascript/BuildQuiz";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Button";
@@ -44,23 +46,23 @@ function BuildQuiz() {
     const [loading, setLoading] = useState(false);
 
 
-    // Sync currentQuestionData to match selected index (loads new template question data when we go to a new question)
-useEffect(() => {
-    setCurrentQuestionData(questions[currentQuestion]);
-}, [currentQuestion]);
+        // Sync currentQuestionData to match selected index (loads new template question data when we go to a new question)
+    useEffect(() => {
+        setCurrentQuestionData(questions[currentQuestion]);
+    }, [currentQuestion]);
 
-// Update questions only if question data changed, used to update the questions array with the current questions data array.
-useEffect(() => {
-    setQuestions(prev => {
-        if (JSON.stringify(prev[currentQuestion]) === JSON.stringify(currentQuestionData)) {// stops any unnecssary rerenders.
-            return prev;
-        }
+    // Update questions only if question data changed, used to update the questions array with the current questions data array.
+    useEffect(() => {
+        setQuestions(prev => {
+            if (JSON.stringify(prev[currentQuestion]) === JSON.stringify(currentQuestionData)) {// stops any unnecssary rerenders.
+                return prev;
+            }
 
-        const updated = [...prev];
-        updated[currentQuestion] = currentQuestionData;
-        return updated;
-    });
-}, [currentQuestionData, currentQuestion]);
+            const updated = [...prev];
+            updated[currentQuestion] = currentQuestionData;
+            return updated;
+        });
+    }, [currentQuestionData, currentQuestion]);
 
 
     // we don't want to use local storage for storing quizzes as it's very finicky and a lot of extra code to manage properly
@@ -103,28 +105,37 @@ useEffect(() => {
                 />
 
                 {/* Options Section */}
-                <div className="options">
-                    {currentQuestionData.options.map((option, index) => (
-                        <div key={index}>
-                            <QuizOption
-                                text={option}
-                                picked={currentQuestionData.correctAnswer === index}
-                                onTextChange={(newText) =>
-                                    setCurrentQuestionData(
-                                        updateCurrentQuestionData(currentQuestionData, "options", newText, true, index)
-                                    )
-                                }
-                                onSelect={() =>
-                                    setCurrentQuestionData(
-                                        updateCurrentQuestionData(currentQuestionData, "correctAnswer", index)
-                                    )
-                                }
-                            />
-                        </div>
-                    ))}
+                <div className = "optionsContainer">
+                    <div className="options">
+                        {currentQuestionData.options.map((option, index) => (
+                            <div key={index}>
+                                <QuizOption
+                                    text={option}
+                                    picked={currentQuestionData.correctAnswer === index}
+                                    onTextChange={(newText) =>
+                                        setCurrentQuestionData(
+                                            updateCurrentQuestionData(currentQuestionData, "options", newText, true, index)
+                                        )
+                                    }
+                                    onSelect={() =>
+                                        setCurrentQuestionData(
+                                            updateCurrentQuestionData(currentQuestionData, "correctAnswer", index)
+                                        )
+                                    }
+                                    onRemove={() => 
+                                        removeOption(currentQuestionData, 
+                                        index, setCurrentQuestionData, setResponse)}
+                                />
+                            </div>
+                        ))}
+
+                    <button className = "addOptionButton" onClick = {() => addOption(currentQuestionData, setCurrentQuestionData, setResponse)}>
+                        +</button>
+                    </div>
                 </div>
 
                 <p>*please specify which of the options will be the correct answer by checking the correct answer*</p>
+                <p className = "response">{response}</p>{/* response from back end */}
 
                 {/* Navigation Buttons */}
                 <div className="buttons">
@@ -150,7 +161,6 @@ useEffect(() => {
                         />
                     )}
                 </div>
-                <p className = "response">{response}</p>{/* response from back end */}
             </form>
             {loading && <Spinner message = "loading..."/>}
         </main>
