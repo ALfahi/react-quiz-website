@@ -46,7 +46,7 @@ function App()
               <Route path = "/your-quiz" element = {<ProtectedPage page = {<YourQuiz/>}/>}/>
               <Route path = "/quiz-status" element ={<ProtectedPage page = {<QuizStatus/>}/>}/>
               <Route path = "/create-quiz" element = {<ProtectedPage page = {<CreateQuiz/>}/>}/>
-              <Route path = "/pending-quiz" element = {<ProtectedPage page = {<PendingQuiz/>}/>}/>
+              <Route path = "/pending-quiz" element = {<ProtectedPage page = {<PendingQuiz/>} admin = {true}/>}/>
               <Route path = "/build-quiz" element = {<ProtectedPage page = {<BuildQuiz/>}/>}/>
               <Route path = "/verify-email" element = {<VerifyEmailPage/>}/>
               <Route path = "/reset-password" element = {<ResetPassword/>}/>

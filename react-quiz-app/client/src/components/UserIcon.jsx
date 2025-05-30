@@ -53,12 +53,12 @@ function UserIcon() {
                             <Link to = "/your-quiz">
                                 <h3>Your Quizzes</h3>
                             </Link>
-                            <Link to = "pending-quiz">
-                                <h3>Pending Quizzes</h3>
-                            </Link>
                             {/* fill in admin links here */}
-                            {(user?.admin == 'admin') &&(
+                            {(user?.role === 'admin') &&(
                                 <>
+                                     <Link to = "pending-quiz">
+                                        <h3>Pending Quizzes</h3>
+                                    </Link>
                                 </>
                             )}
                         </>

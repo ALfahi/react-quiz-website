@@ -17,9 +17,8 @@ function ProtectedPage({ page, admin = false}) {
     const [allowed, setAllowed] = useState(null); // null = loading.
 
     useEffect(() => {
-
         // If user is not logged in, or user is logged in but is not admin in an admin level page.
-        if (!token || (admin && user?.admin !== 'admin')) {
+        if (!token || (admin && user?.role !== 'admin')) {
             navigate('/login');
             return;
         }
