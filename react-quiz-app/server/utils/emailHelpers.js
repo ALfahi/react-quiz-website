@@ -57,7 +57,7 @@ export async function sendVerificationEmail(token, username, email)
 {
     await sendTemplatedEmail({token,email,
         subject: 'Verify and create your QuizMania account',templatePath: '../emails/accountActivation.html',
-        redirectPage: 'VerifyEmail', optionalReplacements: {username}});
+        redirectPage: 'Verify-email', optionalReplacements: {username}});
 }
 
 // This function is used to send an email specifically to reset the password.
@@ -67,5 +67,5 @@ export async function sendPasswordResetEmail(token, email, username)
     await sendTemplatedEmail({
         token,email,
         subject: 'Reset your QuizMania password',templatePath: '../emails/passwordReset.html',
-        redirectPage: 'ForgottenPassword', optionalReplacements: {username}});
+        redirectPage: 'forgotten-password', optionalReplacements: {username}});
 }
