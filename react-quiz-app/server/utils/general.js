@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
 
 // This function returns the entire contents of the specified file.
@@ -22,4 +23,19 @@ export function getFileContent(directory)
 //
 export function createJwtToken(payload, expiry = '15m') {
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: expiry });
+}
+
+// This function is used to create and return an unique identifier, it checks the passed in model if a unqidie identifier already exists.
+//
+export async function getUniqueIdentifier(model)
+{
+    let modelId;
+    let isUnique = false;
+    while (!isUnique)
+    {
+        modelId = uuidv4();
+        const doesExist = await model.findById(modelId);
+        isUnique = !doesExist// if there was a match, then the uuid is not unique.
+    }
+    return modelId
 }
