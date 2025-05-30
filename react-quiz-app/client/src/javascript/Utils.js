@@ -8,15 +8,8 @@ export function changeFileImage(event, setImageURL, setImageFile)// setImage is 
     const file = event.target.files[0];// returns null if nothing in the array.
 
 
-    // Allowed raster image MIME types (excluding animated formats)
-    const allowedTypes = [
-        "image/png", "image/jpeg", "image/jpg", 
-        "image/bmp", "image/webp", "image/x-icon", "image/tiff"
-    ];
-
-
-    // Validate file type and check if the file was even uploaded.
-    if (!file || !allowedTypes.includes(file.type)) {
+    if (!isValidImageType(file))
+    {
         return;
     }
     else
@@ -27,6 +20,13 @@ export function changeFileImage(event, setImageURL, setImageFile)// setImage is 
     }
 }
 
+// This function checks if the user has uploaded an image, it then checks if it's in the correct format. returns a boolean
+//
+export function isValidImageType(file) {
+    const allowedTypes = ["image/png","image/jpeg","image/jpg","image/bmp","image/webp","image/x-icon","image/tiff"];
+    
+    return file && allowedTypes.includes(file.type);
+  }
 /*************************GETTER and SETTERS ***************/
 
 export function getTotalQuestionsLocal()// gets total number of questions of a quiz from local storage

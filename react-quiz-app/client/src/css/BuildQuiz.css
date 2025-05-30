@@ -27,6 +27,7 @@ textarea{
     align-content: center;
 }
 
+/* some css to control how the answer option buttons look like */
 .optionsContainer{
     position: relative;
     padding: 1rem 4rem;
@@ -50,7 +51,69 @@ textarea{
 .optionsContainer:hover .addOptionButton{
     display:block;
 }
-    
+
+/* some css relating to how the images look */
+.imageUploadContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+    width: 100%;
+  }
+
+  /* Only apply grey background if there's an image */
+.imageUploadContainer.withImage {
+    background-color: grey;
+  }
+  
+  /* Optional: make it transparent if no image */
+  .imageUploadContainer.noImage {
+    background-color: transparent;
+  }
+  
+  
+  .imageUploadContainer label {/* TO DO: give this the exact same styling as the buttons */
+    cursor: pointer;
+    color: aliceblue;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #1a1a1a;
+    cursor: pointer;
+    transition: border-color 0.25s;
+  }
+  
+  .imageUploadContainer input[type="file"] {
+    display: none;
+  }
+  
+  .imagePreview {
+    margin-top: 0.5rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .imagePreview img {
+    max-width: 100%;
+    height: auto;
+    max-height: 80vh;/* good for large screens, needs to be adjusts for phones */
+    display: block;
+    object-fit: contain; /* prevents distortion */
+    margin-bottom: 0.5rem;
+  }
+
+  .imageActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+/* moving the 'next' button to the right of the form */
 .next{
     margin-left: auto;
 }

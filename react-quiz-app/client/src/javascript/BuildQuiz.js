@@ -4,6 +4,7 @@
 // answer: specifies which of the 4 possible options are correct.
 
 import { createQuiz, handleApiCallWithFeedback } from "./UserServices";
+import { isValidImageType } from "./Utils";
 
 // This function just initialises a question set with default values, which are then to be edited by users.
 //
@@ -17,7 +18,9 @@ export function initialiseQuestions(totalQuestions)
             options: ["option 1", "option 2", "option 3", "option 4"],
             correctAnswer: 0,// key name must be same as the one in the db to prevent any errors.
             // correctAnswer is also just the index of the options array, representing which one is correct.
-            image: null, // an optional image that users can upload that can can be in questions.
+            imageFile: null, // an optional image that users can upload that can can be in questions.
+            imagePreview:null// used to show the image whilst user is still making the quiz.
+
         };
         questionList.push(question);
     }
@@ -75,7 +78,37 @@ export function addOption(currentQuestion, setCurrentQuestionData, setMessage) {
     });
 }
 
-// Conditional rendering functions
+// This function is used to add an image to a question:
+// 
+export function handleImageChange(event, currentQuestionData, setCurrentQuestionData) {
+    const file = event.target.files[0];
+    // checks to see if the image is of the correct type (and also checks if an image has been uploaded in first place).
+    if (!isValidImageType(file)) {
+      return;
+    }
+    
+    // remove the previous image if the question had an image before.
+    if (currentQuestionData.imagePreview) {
+      URL.revokeObjectURL(currentQuestionData.imagePreview);
+    }
+  
+    const url = URL.createObjectURL(file);
+  
+    setCurrentQuestionData({ ...currentQuestionData, imagePreview: url, imageFile: file,});
+  }
+// This function is used to remove an image from the current question.
+//
+export function removeImageFromQuestion(currentQuestion, setCurrentQuestionData)
+{
+    if (currentQuestion.imagePreview) {
+        URL.revokeObjectURL(currentQuestion.imagePreview);
+      }
+      setCurrentQuestionData((prev) => ({
+        ...prev,
+        imageFile: null,
+        imagePreview: null,
+      }));
+}
 
 // This function just keeps track if we are on the final question.
 export function onLastQuestion(currentIndex, totalIndex) 
@@ -142,6 +175,14 @@ function areQuestionsEmpty(questions, setMessage) {
     return false; // no invalid data found
   }
   
+  // This function checks if the current quiz data is different to whats saved (e.g. if any chages has been made after last
+  // time that it was saved. returns a boolean)
+  // This only checks between questions as quiz title and banner are determined before BuildQuiz.jsx page.
+  //
+  export function hasQuestionsSaved(prevQuestions)
+  {
+
+  }
 
 export async function submit(title, imageBanner, questions, user, setMessage, setLoading, navigate)
 {
@@ -161,6 +202,13 @@ export async function submit(title, imageBanner, questions, user, setMessage, se
     formData.append("questions", JSON.stringify(questions));// convert the questions array into a string.
     formData.append("title", title);
     formData.append("banner", imageBanner);
+
+    // also append any images that the some questions may have.
+    questions.forEach((q, index) => {
+        if (q.imageFile) {
+            formData.append(`question_${index}`, q.imageFile);
+        }
+    });
 
     // now pass it into the back end for processing.
     await handleApiCallWithFeedback({

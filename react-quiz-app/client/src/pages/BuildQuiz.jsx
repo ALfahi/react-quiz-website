@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
     initialiseQuestions, 
@@ -7,7 +7,7 @@ import {
     onFirstQuestion, 
     submit,
     removeOption,
-    addOption
+    addOption, handleImageChange, removeImageFromQuestion
 } from "../javascript/BuildQuiz";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Button";
@@ -26,11 +26,8 @@ function BuildQuiz() {
     const parsedSavedState = savedState ? JSON.parse(savedState) : null;
 
     // Destructure state from either navigation or session storage
-    const {
-        quizTitle,
-        imageBanner,
-        totalQuestions
-    } = location.state || parsedSavedState || {};
+    const { quizTitle,imageBanner,totalQuestions} = location.state || parsedSavedState || {};
+
 
     // initialise questions from navigation state, sessionStorage, or default
     const [questions, setQuestions] = useState(
@@ -41,6 +38,14 @@ function BuildQuiz() {
     // only update the current question locally and save to the big questions array when we move onto a different question or finish
     // improves performance by a noticible margin, especially for large numbers of users.
     const [currentQuestionData, setCurrentQuestionData] = useState(questions[currentQuestion]);
+
+     // creating a varibale to store the initial question state (used to keep track if the user has made any changes since last time of saving it.)
+     const initialQuestions = useRef(
+        parsedSavedState?.questions?.map(q => ({ ...q, imageFile: null, imagePreview: null })) 
+        || initialiseQuestions(totalQuestions)
+    );
+
+    const hasUnsavedChanges = JSON.stringify(questions) !== JSON.stringify(initialQuestions.current);
 
     const [response, setResponse] = useState("");
     const [loading, setLoading] = useState(false);
@@ -71,15 +76,38 @@ function BuildQuiz() {
     // that if the user refreshes the page, they can recover their quiz state.
     useEffect(() => {
         if (quizTitle && totalQuestions) {
+            const questionsToSave = questions.map(q => ({
+                ...q,
+                imagePreview: null,// since image files are not saved when refresh, we need to show it visually by resetting
+                // all image previews.
+                imageFile: null, // remove file object before saving, as we won't be able to save them in back end if they are in
+                // local or session storage.
+            }));
             sessionStorage.setItem(
                 "quizState",
-                JSON.stringify({ quizTitle, imageBanner, totalQuestions, questions, currentQuestion })
+                JSON.stringify({ quizTitle, imageBanner, totalQuestions, questions: questionsToSave, currentQuestion })
             );
         } else {
             // If still nothing available, redirect to create quiz
             navigate("/create-quiz");
         }
     }, [quizTitle, imageBanner, totalQuestions, questions, currentQuestion, navigate]);
+
+    // This use effect is used to warn the user that some data may be lost when they refresh the page:
+    //
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            if (hasUnsavedChanges) { // Only warn if changes were made
+                event.preventDefault();
+                event.returnValue = "";
+            }
+        };
+    
+        window.addEventListener("beforeunload", handleBeforeUnload); // Attach unload listener
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload); // Clean up on unmount
+        };
+    }, [hasUnsavedChanges]); // ⬅️ Re-run effect if unsaved changes state changes
 
     // This use effect will run when this component unmounts (i.e user goes to another page), it will clear the session storage.
     useEffect(() => {
@@ -104,6 +132,44 @@ function BuildQuiz() {
                     }
                 />
 
+                {/*optional image container goes here */}
+                {/* toggling different classes for different syles depending if there is an image present or not */}
+                <div className={`imageUploadContainer ${currentQuestionData.imagePreview ? "withImage" : "noImage"}`}>
+                    <input
+                        id="questionImage"
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, currentQuestionData, setCurrentQuestionData)}
+                    />
+
+                    {currentQuestionData.imagePreview && (
+                        <div className="imagePreview">
+                            <img
+                                src={currentQuestionData.imagePreview}
+                                alt="Question"
+                            />
+
+                            {/* Buttons in a row */}
+                            <div className="imageActions">
+                                <label htmlFor="questionImage">Change Image</label>
+                                <Button
+                                text="Remove Image"
+                                onClick={() => removeImageFromQuestion(currentQuestionData, setCurrentQuestionData)}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Show Add Image only if no preview exists */}
+                    {!currentQuestionData.imagePreview && (
+                        <div className="imageActions">
+                            <label htmlFor="questionImage">Add Image</label>
+                        </div>
+                    )}
+
+                </div>
+
+                
                 {/* Options Section */}
                 <div className = "optionsContainer">
                     <div className="options">
