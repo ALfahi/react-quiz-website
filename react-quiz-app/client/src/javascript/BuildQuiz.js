@@ -184,9 +184,9 @@ function areQuestionsEmpty(questions, setMessage) {
 
   }
 
-export async function submit(title, imageBanner, questions, user, setMessage, setLoading, navigate)
+export async function submit(title, imageBanner, questions, user, token, setMessage, setLoading, navigate)
 {
-    if (!user)
+    if (!user)// front enc check to see if user is still logged in before going to back end for extra processing.
     {
         console.error("user does not exist as time of creating quiz");
         return;
@@ -198,7 +198,6 @@ export async function submit(title, imageBanner, questions, user, setMessage, se
 
     const formData = new FormData();
     console.log(questions);
-    formData.append("username", user?.id);// just pass in the user's id instead of name to link the quiz to the user in db.
     formData.append("questions", JSON.stringify(questions));// convert the questions array into a string.
     formData.append("title", title);
     formData.append("banner", imageBanner);
@@ -212,7 +211,7 @@ export async function submit(title, imageBanner, questions, user, setMessage, se
 
     // now pass it into the back end for processing.
     await handleApiCallWithFeedback({
-        asyncFunc: () => createQuiz(formData),
+        asyncFunc: () => createQuiz(formData, token),
         setMessage,
         setLoading,
         successMessage: "quiz has been successfully created",

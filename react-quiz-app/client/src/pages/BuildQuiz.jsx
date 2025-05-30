@@ -18,7 +18,7 @@ import "../css/BuildQuiz.css";
 
 function BuildQuiz() {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, token } = useAuth();
     const location = useLocation();
 
     // Try to recover quiz state from session storage
@@ -222,7 +222,7 @@ function BuildQuiz() {
                         <Button
                             text="Finish"
                             onClick={() => {
-                                submit(quizTitle, imageBanner, questions, user, setResponse, setLoading, navigate);
+                                submit(quizTitle, imageBanner, questions, user, token, setResponse, setLoading, navigate);
                             }}
                         />
                     )}

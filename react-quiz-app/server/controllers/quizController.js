@@ -2,13 +2,16 @@ import fs from 'fs/promises';
 import path from 'path';
 import Quiz from '../models/quizModel.js';
 import { getUniqueIdentifier } from '../utils/general.js';
+import { verifyToken } from '../utils/useAuth.js';
 
 // creates a new quiz in database and also moves all associated assets to a newly created folder.
 //
 export async function createQuiz(req, res) {
     try {
-        console.log("Files received:", req.files);
-      const { username, questions, title } = req.body;
+      const decoded = verifyToken(req)
+      const userId = decoded.id;
+      console.log("Files received:", req.files);
+      const {questions, title } = req.body;
       const parsedQuestions = JSON.parse(questions);
       const files = req.files || [];
   
@@ -65,7 +68,7 @@ export async function createQuiz(req, res) {
         title,
         imageUrl: bannerPath,
         questions: parsedQuestions,
-        createdBy: username,
+        createdBy: userId,
         isPublic: false,
         status: 'pending',
       });
@@ -82,7 +85,7 @@ export async function createQuiz(req, res) {
           console.error('Error cleaning up folder:', cleanupErr);
         }
       }
-      res.status(500).json({ message: 'Error creating quiz' });
+      res.status(err.status || 500).json({ message: err.message || 'Error creating quiz' });
     }
   }
 
