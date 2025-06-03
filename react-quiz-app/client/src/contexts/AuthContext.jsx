@@ -8,6 +8,7 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
     // if token is not null then it mans that user is logged in.
+    // token stores: id, username, email and role.
     const [token, setToken] = useState(localStorage.getItem("user token"));
     const [user, setUser] = useState(null);
 

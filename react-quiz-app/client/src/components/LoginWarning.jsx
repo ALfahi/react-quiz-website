@@ -1,6 +1,6 @@
 /* this component is used to show a pop up telling user that they are about to be logged out, they then can either ignore the pop up
 or renew their login session */
-import { useLoginWarning } from "../javascript/LoginWarning"
+import { useLoginWarning } from "../javascript/pages/LoginWarning"
 import "../css/LoginWarning.css"
 export function LoginWarning()
 {

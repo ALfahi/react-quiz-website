@@ -1,4 +1,4 @@
-import { resetPassword, handleApiCallWithFeedback } from "./UserServices";
+import { resetPassword, handleApiCallWithFeedback } from "../UserServices";
 
 export function hasValidationErrors(passwordErrors, confirmPasswordErrors)
 {

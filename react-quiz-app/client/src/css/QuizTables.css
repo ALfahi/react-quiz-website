@@ -1,0 +1,55 @@
+.tableContainer {
+  display: block;
+  height: 75vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  border: 1px solid black;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+/* Table fills the container's width but columns behave flexibly */
+.quizTable {
+  width: 100%;               /* Full width of container */
+  height: auto;
+  table-layout: auto;        /* Allow content-driven sizing */
+  border-collapse: collapse;
+  color: black;
+}
+
+/* Sticky table header */
+.quizTable thead tr {
+  position: sticky;
+  top: 0;
+  background-color: grey;
+  color: white;
+  z-index: 1;
+}
+
+/* General cell styling */
+.quizTable th,.quizTable td {
+  border: 1px solid black;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 1.2;
+}
+/* Content columns - stretch if extra space is available */
+.quizTable td {
+  width: auto;         /* Expand as needed */
+  text-align: left;
+}
+
+/* Action columns (e.g. edit/delete) - give them auto width */
+.quizTable td.action {
+  width: 1%;           /* Auto-shrink to fit content */
+  white-space: nowrap; /* Don't wrap buttons */
+  text-align: center;
+}
+
+
+

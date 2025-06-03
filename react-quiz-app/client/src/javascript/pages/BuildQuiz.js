@@ -3,8 +3,8 @@
 //options: an array of 4 possible options (these are the answer's and only one of them is correct)
 // answer: specifies which of the 4 possible options are correct.
 
-import { createQuiz, handleApiCallWithFeedback } from "./UserServices";
-import { isValidImageType } from "./Utils";
+import { createQuiz, handleApiCallWithFeedback } from "../UserServices";
+import { isValidImageType } from "../Utils";
 
 // This function just initialises a question set with default values, which are then to be edited by users.
 //

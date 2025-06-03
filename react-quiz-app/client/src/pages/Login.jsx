@@ -4,7 +4,7 @@ import Button from "../components/Button";// adding extra dot to go up one level
 // /src/ so that we can go into components. 
 import Textbox from "../components/Textbox"; 
 import Spinner from "../components/Spinner"
-import { handleSubmit } from "../javascript/LoginPage";
+import { handleSubmit } from "../javascript/pages/LoginPage";
 import {useAuth} from "../contexts/AuthContext";
 import "../css/Form.css"
 import "../css/Login.css";

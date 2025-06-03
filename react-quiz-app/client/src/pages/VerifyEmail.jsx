@@ -1,4 +1,4 @@
-import { useVerifyEmail } from "../javascript/VerifyEmailPage";
+import { useVerifyEmail } from "../javascript/pages/VerifyEmailPage";
 import { useState } from "react";
 import { resendVerificationEmail } from "../javascript/UserServices";
 import Spinner from "../components/Spinner"

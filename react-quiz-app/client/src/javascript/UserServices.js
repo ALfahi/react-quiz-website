@@ -182,6 +182,7 @@ export async function handleApiCallWithFeedback({
     successMessage,
     errorMessage = "An error has occurred, please try again.",
     onSuccess,// optional function that runs when the response was successful.
+    onError,// optional function to run when response was not successfull.
     navigateTo,// desitination page.
     navigate,// useNavigate object.
     navigateState = {},  // adds flexability for when you want to add in states before moving onto next page.
@@ -217,6 +218,13 @@ export async function handleApiCallWithFeedback({
             }
             return;
         }
+        else {
+            // Allow custom handling of errors
+            if (onError) {
+              onError(response.status, data);
+            }
+            setMessage(data.message || errorMessage);
+          }
     
         setMessage(data.message || errorMessage);
         } catch (error) {
@@ -236,10 +244,50 @@ export async function createQuiz(formData, token)
     const response = await fetch("http://localhost:3001/api/quizzes/createQuiz",{
     method: 'POST',
     headers: {
-        Authorisation: `Bearer ${token}` // attatch token so we can verify it in back end.
+        Authorization: `Bearer ${token}` // attatch token so we can verify it in back end.
     },
     body: formData,
     })
 
     return response;
 }
+
+// This general function is used to query and get quizzes from the back end.
+//
+export async function getQuizzes({ sourcePage, title, createdBy, status, isPublic, id }, token) {
+    // Build query params string
+    const params = new URLSearchParams();
+    if (sourcePage) params.append('sourcePage', sourcePage)
+    if (title) params.append('title', title);
+    if (createdBy) params.append('createdBy', createdBy);
+    if (status) params.append('status', status);
+    if (typeof isPublic === 'boolean') params.append('isPublic', isPublic);
+    if (id) params.append('id', id);
+  
+    const url = `http://localhost:3001/api/quizzes/getQuizzes?${params.toString()}`;
+  
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}` // attach token so backend can verify it
+      },
+    });
+  
+    return response;
+  }
+
+  // This function will be used to connect to the database and change a quizzes status e.g. pending is changed into rejected or approved.
+  //
+  export async function changeQuizStatus(isQuizAccepted, rejectedReason, quizId, token)
+  {
+    const response = await fetch("http://localhost:3001/api/quizzes/updateQuizStatus", {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({isQuizAccepted, rejectedReason, quizId})
+    });
+
+    return response;
+  }

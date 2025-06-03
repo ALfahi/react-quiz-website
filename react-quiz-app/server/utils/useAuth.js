@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 // if it's a valid jwt token, it returns the token, otherwise it will throw an error.
 //
 export function verifyToken(req) {
-  const authHeader = req.headers['authorisation'];
+  const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {

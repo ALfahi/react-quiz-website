@@ -1,4 +1,4 @@
-import { handleApiCallWithFeedback, handleUserLogin } from "./UserServices";
+import { handleApiCallWithFeedback, handleUserLogin } from "../UserServices";
 // This function just checks if user was inputted in correct information to the login form, if so then redirect to the quiz menu page
 // otherwise do nothing
 // it also displays the back end message to the front end.

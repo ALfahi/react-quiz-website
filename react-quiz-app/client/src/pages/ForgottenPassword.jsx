@@ -1,6 +1,6 @@
 import {useNavigate} from "react-router-dom";
 import {useState, useEffect} from "react";
-import { submitForm, redirectToResetPasswordPage} from "../javascript/ForgottenPassword";
+import { submitForm, redirectToResetPasswordPage} from "../javascript/pages/ForgottenPassword";
 // /src/ so that we can go into components. 
 import Textbox from "../components/Textbox"; 
 import Spinner from "../components/Spinner"   

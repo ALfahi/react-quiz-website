@@ -5,7 +5,7 @@ import Textbox from "../components/Textbox"
 import Card from "../components/Card"
 import defaultImage from "../assets/quizDefault.png";
 import {editImage,changeFileImage } from "../javascript/Utils";
-import {updateQuizTitle, updateTotalQuestions, submit} from "../javascript/CreateQuiz";
+import {updateQuizTitle, updateTotalQuestions, submit} from "../javascript/pages/CreateQuiz";
 
 function CreateQuiz(){
 

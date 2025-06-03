@@ -7,7 +7,7 @@ import ErrorList from "../components/ErrorList";
 import "../css/Form.css";
 
 import {handlePasswordChange, handleConfirmPasswordChange, handleUsernameChange,
-    hasValidationErrors, submitForm} from "../javascript/Register";
+    hasValidationErrors, submitForm} from "../javascript/pages/Register";
 function Register()// TO DO: MAKE SURE THAT WE ONLY LIMIT ONE EMAIL PER DATABASE 
 // (i.e emails are unique, and one email can only have one account)
 {

@@ -1,4 +1,4 @@
-import { sendResetPasswordEmail, validateResetPasswordToken, handleApiCallWithFeedback} from "./UserServices";
+import { sendResetPasswordEmail, validateResetPasswordToken, handleApiCallWithFeedback} from "../UserServices";
 // This function just sends the email to the back end which will be used to verify that the user owns the email.
 //
 export async function submitForm(email, setMessage, setLoading) 

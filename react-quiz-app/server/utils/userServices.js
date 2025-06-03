@@ -170,3 +170,66 @@ export async function updateUserPassword(token, newPassword)
     await user.save();
     return { success: true, user };
   }
+
+  // This fuction is used to build and return a filter to efficiently query quizzes.
+  // This function also handles any back end checks to stop people from seeing quizzes that they are not supposed to
+  // e.g. non admin people seeing 'pending' or private quizzes.
+  //
+  export async function buildQuizFilter(req, user) {
+    const source = req.body || req.query;
+    const { sourcePage, status, isPublic, id, search } = source;
+  
+    // search is what is typed by in the search bar, either a quiz title or a username.
+    // id is the quiz's own id.
+  
+    const isAdmin = user?.role === 'admin';
+    const currentUserId = user?.id?.toString(); // we need this variable to keep track if a user can see any quizzes made by a specific user
+                                                // (e.g. a user checking their own quizzes can see all the quizzes regardless of status)
+                                                // but a normal user/ guest can only see public quizzes.
+  
+    const filter = {};
+    if (id) filter._id = id;
+    if (status) filter.status = status;
+  
+    let orConditions = [];
+    let matchedUserId = null;
+  
+    if (search) {
+      // Check if search string matches a username, return any quizzes with that username
+      const foundUser = await Users.findOne({ username: search }).select('_id');
+      if (foundUser) {
+        matchedUserId = foundUser._id.toString();
+        orConditions.push({ createdBy: matchedUserId });
+      }
+  
+      // Add title fuzzy match (always)
+      orConditions.push({ title: new RegExp(search, 'i') });
+    }
+    /******** doing some page specific valiations */
+  
+    // User viewing own quizzes, even admins can't look at other user's quizzes within these pages.
+    if (sourcePage === 'your-quizzes' || sourcePage === 'quiz-status') {
+        filter.createdBy = currentUserId;
+        if (orConditions.length > 0) filter.$or = orConditions;
+        return filter;
+    }
+  
+    // Admins can query anything (used in e.g. pending-quizzes page)
+    if (sourcePage === 'pending-quiz') {
+        if (!isAdmin) {
+            throw { status: 403, message: "Only admins can view pending quizzes." };
+        }
+        if (typeof isPublic === 'boolean'){
+                filter.isPublic = isPublic;
+        }
+        if (orConditions.length > 0) filter.$or = orConditions;
+        return filter;
+    }
+  
+    // Guests / general users: only see public quizzes
+    // (also default case when sourcePage is not provided)
+    filter.isPublic = true;
+    if (orConditions.length > 0) filter.$or = orConditions;
+    return filter;
+  }
+  

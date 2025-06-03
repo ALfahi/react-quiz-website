@@ -8,7 +8,7 @@ import {
     submit,
     removeOption,
     addOption, handleImageChange, removeImageFromQuestion
-} from "../javascript/BuildQuiz";
+} from "../javascript/pages/BuildQuiz";
 import { useAuth } from "../contexts/AuthContext";
 import Button from "../components/Button";
 import Spinner from "../components/Spinner"

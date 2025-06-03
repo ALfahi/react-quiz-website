@@ -71,6 +71,10 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.response{
+  background-color: transparent;
+  color:red;
+}
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

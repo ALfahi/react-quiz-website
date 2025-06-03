@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {jwtDecode} from "jwt-decode";
-import { refreshLoginToken } from "./UserServices";
-import { useAuth } from "../contexts/AuthContext"; // get logout from context
+import { refreshLoginToken } from "../UserServices";
+import { useAuth } from "../../contexts/AuthContext"; // get logout from context
 // global variables
 let showWarningTimeoutId = null; // timer to keep track of when to show the pop up
 let countdownIntervalId = null; // count down telling user exactly when they are about to be logged out.

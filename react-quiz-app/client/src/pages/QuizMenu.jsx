@@ -1,6 +1,8 @@
 import Card from "../components/Card";
 import "../css/QuizMenu.css";
 import Textbox from "../components/Textbox";  
+
+/* to DO: make sure to add in that polling and refresh logic to always show up to date quizzes */
 function QuizMenu(){
     return(
         <>

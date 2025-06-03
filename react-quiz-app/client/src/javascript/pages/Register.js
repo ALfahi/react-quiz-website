@@ -1,5 +1,5 @@
-import { validateTextLength} from "./Utils";
-import { registerUser, doesUserExist, handleApiCallWithFeedback} from "./UserServices";
+import { validateTextLength} from "../Utils";
+import { registerUser, doesUserExist, handleApiCallWithFeedback} from "../UserServices";
 /************* functions for passwords *********/
 
 

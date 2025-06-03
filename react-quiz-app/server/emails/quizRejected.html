@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Rejected</title>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; }
+    .container { padding: 20px; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 10px; }
+    .header { font-size: 20px; font-weight: bold; color: #F44336; }
+    .footer { margin-top: 20px; font-size: 14px; color: #777; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="header">Your Quiz Was Rejected</p>
+    <p>Hi {{username}},</p>
+    <p>We regret to inform you that your quiz titled <strong>{{quizTitle}}</strong> was not approved after review.</p>
+    <p>Please review the feedback and consider updating your quiz to meet our guidelines. Rejected quizzes will be automatically deleted in a 5 days.</p>
+    <p>Quiz data will stay on servers for 4 days before deletion, so please make a back up if you want to retry within the next 4 days.</p>
+    <br>
+    <p>reason for Rejection:</p>
+    <p>{{rejectionReason}}</p>
+    <p class="footer">– The QuizMania Team</p>
+  </div>
+</body>
+</html>

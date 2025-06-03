@@ -6,8 +6,8 @@ import Spinner from "../components/Spinner"
 import ErrorList from "../components/ErrorList"; 
 import "../css/Form.css";
 
-import {handlePasswordChange, handleConfirmPasswordChange} from "../javascript/Register.js";
-import { hasValidationErrors, submitForm } from "../javascript/ResetPassword.js";
+import {handlePasswordChange, handleConfirmPasswordChange} from "../javascript/pages/Register.js";
+import { hasValidationErrors, submitForm } from "../javascript/pages/ResetPassword.js";
 
 
 function ResetPassword(){
