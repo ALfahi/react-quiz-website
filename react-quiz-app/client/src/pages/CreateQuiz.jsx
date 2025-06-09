@@ -16,6 +16,7 @@ function CreateQuiz(){
     const [score, setTotalScore] = useState(0);// keeps track total number of questions.
     // logic to display a preview of the quiz banner
     const [display, showCard] = useState(false);
+    const [response, setResponse] = useState(""); // response from backend
     const navigate = useNavigate();
 
     // we also need to clean up the image URL when the component unmounts or when the imageFile changes.
@@ -30,7 +31,7 @@ function CreateQuiz(){
             <main>
                 <form onSubmit = {(e) => submit(e, title, imageFile, score, navigate )}>
                     <Textbox defaultText = "Enter quiz name"  
-                         onChange= {(e) => updateQuizTitle(e, setQuizTitle)} required = {true}></Textbox>
+                         onChange= {(e) => updateQuizTitle(e, setQuizTitle, setResponse)} required = {true}></Textbox>
 
                     <div className = "sameLine">
                         <label htmlFor = "numberOfQuestion">numberOfQuestions (max 20): </label>
@@ -57,6 +58,7 @@ function CreateQuiz(){
                     </div>
 
                     <input type = "submit" id = "submit"></input>
+                    <p className = "response">{response}</p>{/* response from back end */}
                 </form>
                 {/* render the card if the display property is true */}
                 {display &&(
