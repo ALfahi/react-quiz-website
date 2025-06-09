@@ -291,3 +291,19 @@ export async function getQuizzes({ sourcePage, title, createdBy, status, isPubli
 
     return response;
   }
+
+  // This function connects to the back end and deletes a quiz from the database and also removes all associated files from the server.
+  //
+  export async function deleteQuiz(quizId, token)
+  {
+    const response = await fetch("http://localhost:3001/api/quizzes/deleteQuiz", {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ quizId})
+    });
+
+    return response;
+  }

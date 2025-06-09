@@ -5,6 +5,8 @@ import bcrypt from 'bcryptjs';
 import crypto from 'crypto';// use crpyto to hash tokens.
 import { sendVerificationEmail } from '../utils/emailHelpers.js';
 import { createJwtToken } from './general.js';
+import fs from 'fs/promises'; // using promises version of fs to delete folders.
+import path from 'path'; // using path to get the folder name from imageUrl or question image.
 
 // This function is used to actually create a new user inside the database. If a duplicate username exists, then it will
 // simply just not create the user.
@@ -191,7 +193,8 @@ export async function updateUserPassword(token, newPassword)
     if (id) filter._id = id;
     if (status) filter.status = status;
   
-    let orConditions = [];
+    let orConditions = [];// needed to build a query that can match either a username or a quiz title, also is used 
+    // as extra args for specific pages.
     let matchedUserId = null;
   
     if (search) {
@@ -208,11 +211,33 @@ export async function updateUserPassword(token, newPassword)
     /******** doing some page specific valiations */
   
     // User viewing own quizzes, even admins can't look at other user's quizzes within these pages.
-    if (sourcePage === 'your-quizzes' || sourcePage === 'quiz-status') {
+    if (sourcePage === 'your-quizzes') {
         filter.createdBy = currentUserId;
         if (orConditions.length > 0) filter.$or = orConditions;
         return filter;
     }
+
+    // quiz-status page  we will show user's pending, rejected, and recently approved quizzes (e.g. 5 days ago)
+    if (sourcePage === 'quiz-status') {
+        filter.createdBy = currentUserId;
+
+        const fiveDaysAgo = new Date(Date.now() - (5 * 24 * 60 * 60 * 1000));
+
+        const approvedRecent = {status: 'approved',createdAt: { $gte: fiveDaysAgo }};
+        const pending = { status: 'pending' };
+        const rejected = { status: 'rejected' };
+
+        // Add $or to each condition if user used a search term
+        if (orConditions.length > 0) {
+        approvedRecent.$or = [...orConditions];
+        pending.$or = [...orConditions];
+        rejected.$or = [...orConditions];
+        }
+        // Combine all conditions into a single filter
+        filter.$or = [approvedRecent, pending, rejected];
+        return filter;
+    }
+
   
     // Admins can query anything (used in e.g. pending-quizzes page)
     if (sourcePage === 'pending-quiz') {
@@ -233,3 +258,39 @@ export async function updateUserPassword(token, newPassword)
     return filter;
   }
   
+  export async function deleteQuizFolder(quiz)
+  {
+     //  we extract the folder name from imageUrl since user may be able to edit quiz title, hence it won't match with internla folder name
+    // so we get the folder name from imageUrl which will never change.
+
+    // Try to extract folder name from imageUrl or question image
+        let folderName = null;
+    
+        // If the banner image is custom, use that
+        if (quiz.imageUrl && quiz.imageUrl !== 'quizDefault.png') {
+          folderName = quiz.imageUrl.split('/')[0];
+        }
+    
+        // If no custom banner, check question image paths
+        if (!folderName && quiz.questions?.length) {
+          for (const question of quiz.questions) {
+            if (question.imageFile) {
+              folderName = question.imageFile.split('/')[0];
+              break;
+            }
+          }
+        }
+    
+        console.log("Folder name to delete:", folderName);
+        // if we still don't have a folder name, it means the quiz was created without any images, so we can skip deletion. (no folder to begin with)
+        if (folderName) {
+          const folderPath = path.join('uploads', folderName);
+          try {
+            await fs.rm(folderPath, { recursive: true, force: true });
+            console.log(`Deleted folder: ${folderPath}`);
+          } catch (error) {
+            console.error('Failed to delete folder:', error);
+            // Still continue — folder removal failure isn't fatal and will get cleaned up by a cron job later.
+          }
+        }
+  }

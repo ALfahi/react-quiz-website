@@ -6,7 +6,9 @@ import connectToDatabase from './connect.js';
 // Import routes
 import userRoutes from './routes/userRoutes.js';
 import quizRoutes from './routes/quizRoutes.js';
-//import quizRoutes from './routes/quizRoutes.js';
+
+// importing cronjobs;
+import deleteExpiredQuizzes from './cronJobs/deleteQuizFolders.js';
 
 dotenv.config({ path: './config.env' });
 const app = express();
@@ -24,10 +26,11 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api/users', userRoutes);
 app.use('/api/quizzes', quizRoutes);
 
-
 async function startServer() {
     await connectToDatabase(); // Wait for MongoDB connection
 
+    deleteExpiredQuizzes(); // Start the cron job to delete expired quizzes
+    
     app.listen(3001, () => {
         console.log('🚀 Server is running on port 3001');
     });

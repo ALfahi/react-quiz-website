@@ -6,6 +6,7 @@ import Status from '../components/Status';
 import QuizTable from '../components/QuizTables';
 
 import "../css/PendingQuiz.css";
+import "../css/Modal.css";
 function PendingQuiz(){
     const {token} = useAuth();
     const [quizzes, setQuizzes] = useState([]);
@@ -73,28 +74,28 @@ function PendingQuiz(){
                 {showConfirmModal && (
                     <div className="modalBackdrop">
                         <div className="modal">
-                        <h2>{isRejecting ? 'Reject Quiz' : 'Accept Quiz'} Confirmation</h2>
-                        <p>Are you sure you want to {isRejecting ? 'reject' : 'accept'} the quiz <strong>{selectedQuiz.title}</strong>?</p>
+                            <h2>{isRejecting ? 'Reject Quiz' : 'Accept Quiz'} Confirmation</h2>
+                            <p>Are you sure you want to {isRejecting ? 'reject' : 'accept'} the quiz <strong>{selectedQuiz.title}</strong>?</p>
 
-                        {isRejecting && (
-                            <>
-                            <label htmlFor="rejectionReason">Rejection Reason:</label>
-                            <textarea
-                                id="rejectionReason"
-                                value={rejectionReason}
-                                onChange={(e) => setRejectionReason(e.target.value)}
-                                placeholder="Enter reason of rejection to send to the quiz creator..."
-                                rows={4}
-                            />
-                            </>
-                        )}
+                            {isRejecting && (
+                                <>
+                                <label htmlFor="rejectionReason">Rejection Reason:</label>
+                                <textarea
+                                    id="rejectionReason"
+                                    value={rejectionReason}
+                                    onChange={(e) => setRejectionReason(e.target.value)}
+                                    placeholder="Enter reason of rejection to send to the quiz creator..."
+                                    rows={4}
+                                />
+                                </>
+                            )}
 
-                        <div className="modalActions">
-                            <button onClick={() => setShowConfirmModal(false)}>Cancel</button>
+                            <div className="modalActions">
+                                <button type = "button" onClick={() => setShowConfirmModal(false)}>Cancel</button>
 
-                            <button onClick={async () => handleConfirmAction(isRejecting, rejectionReason, selectedQuiz._id, token, 
-                               setShowConfirmModal,  setResponse, setLoading, setQuizzes)}>Confirm</button>
-                        </div>
+                                <button type = "button" onClick={async () => handleConfirmAction(isRejecting, rejectionReason, selectedQuiz._id, token, 
+                                setShowConfirmModal,  setResponse, setLoading, setQuizzes)}>Confirm</button>
+                            </div>
                         </div>
                     </div>
                     )}

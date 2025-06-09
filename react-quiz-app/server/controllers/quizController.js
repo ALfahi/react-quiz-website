@@ -3,7 +3,7 @@ import path from 'path';
 import Quiz from '../models/quizModel.js';
 import { getUniqueIdentifier } from '../utils/general.js';
 import { verifyToken } from '../utils/useAuth.js';
-import { buildQuizFilter } from '../utils/userServices.js';
+import { buildQuizFilter, deleteQuizFolder } from '../utils/userServices.js';
 import { sendQuizStatusEmail } from '../utils/emailHelpers.js';
 
 // creates a new quiz in database and also moves all associated assets to a newly created folder.
@@ -97,6 +97,7 @@ export async function getQuizzes(req, res) {
       const decoded = verifyToken(req);
       // build a filter so that we can return the thing.
       const filter = await buildQuizFilter(req, decoded);
+      console.log("Filter for quizzes: ", filter);
       //TO DO: make the sorting more general e.g. get it from req.
       // if the filter has a createdBy search, then it's trying to act a User username, so we must populate it beforehand.
       const quizzes = await Quiz.find(filter).sort({createdAt: -1}).populate('createdBy', 'username');
@@ -108,6 +109,32 @@ export async function getQuizzes(req, res) {
       res.status(err.status || 500).json({ message: err.message || 'Error getting quizzes' });
     }
 }
+
+
+// This function will delete a quiz and all associated files from the server.
+//
+export async function deleteQuiz(req, res) {
+  try {
+    const decoded = verifyToken(req);// this also verifies the token and will return an error if token is altered or doesn't exist etc.
+    const { quizId} = req.body;
+  
+    // Delete the quiz from the database
+    const quiz = await Quiz.findOneAndDelete({ _id: quizId, createdBy: decoded.id });
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found or you do not have permission to delete it." });
+    }
+
+    // delete the quiz folder and all associated files.
+    await deleteQuizFolder(quiz);
+    
+    return res.status(200).json({ message: "Quiz and associated files deleted successfully." });
+
+  } catch (error) {
+    console.error(error);
+    res.status(error.status || 500).json({ message: error.message || 'Error deleting quiz' });
+  }
+}
+
 
 // This function will change the status of a quiz.
 //
@@ -141,7 +168,7 @@ export async function changeQuizStatus(req, res) {
     {
       quiz.status = 'rejected';
       // if quiz was rejected, auto delete from db in 5 days.
-      quiz.rejectedExpiresAt = Date.now() + 5 * 60 * 1000;// 5 minutes.
+      quiz.rejectedExpiresAt = Date.now() + (5 * 24 * 60 * 60 * 1000);// 5 days.
     }
     
     await quiz.save(); // save quiz to db first and show a response, then in background send the email.

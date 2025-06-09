@@ -28,9 +28,8 @@ const quizSchema = new mongoose.Schema({
 
 }, { _id: false }); // Allows us to set the  _id manually
 
-// Automatically delete rejected quizzes when the rejectedExpiresAt date is reached
-quizSchema.index({ rejectedExpiresAt: 1 }, { expireAfterSeconds: 0 }); 
-
+// we don't auto delete quizzes since it can interfere with deleting quiz folders, so instead we use a cron job
+// to delete both quiz document and its folder after a certain time.
 const Quiz = mongoose.model('quizzes', quizSchema);
 
 export default Quiz;

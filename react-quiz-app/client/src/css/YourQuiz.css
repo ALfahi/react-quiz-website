@@ -5,23 +5,14 @@ section{
 aside{
     grid-area: button;
 }
-table{
-    border: 1px solid black;
-    width: 90%;
-    height: 70vh;
-    margin: auto;
-}
-
-thead{
-    background-color: grey;
-    text-align: center;
-    padding: 1rem;
-    font-size: 2rem;
-}
 
 .pageContainer{
     display: grid;
     grid-template-areas: "table button";
     grid-template-columns: 1fr auto;
     gap: 2rem;
+}
+
+.response{
+    grid-area: response;
 }
